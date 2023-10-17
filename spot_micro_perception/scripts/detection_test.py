@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
-from os.path import dirname, abspath
+# from os.path import dirname, abspath
 import cv2
 import numpy as np
+import rospkg
 
+rospack = rospkg.RosPack()
+pkgdir = rospack.get_path('spot_micro_perception')
 
-package = dirname(abspath(__file__))
-model = cv2.dnn.readNetFromDarknet(package + '/network_config/yolo-voc.cfg', package + '/network_config/yolo-voc.weights')
+model = cv2.dnn.readNetFromDarknet(pkgdir + '/network_config/yolo-voc.cfg', pkgdir + '/network_config/yolo-voc.weights')
 
 classes = []
 
-
-with open(package + '/object_labels/voc.txt') as voc:
+with open(pkgdir + '/object_labels/voc.txt') as voc:
    classes = voc.read().splitlines()
