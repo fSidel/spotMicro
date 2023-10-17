@@ -1,0 +1,8 @@
+cd ./spot_micro_perception/scripts/network_config/
+
+wget http://pjreddie.com/media/files/yolo-voc.weights
+wget http://pjreddie.com/media/files/yolov2-voc.weights
+wget http://pjreddie.com/media/files/yolov2-tiny-voc.weights
+wget http://pjreddie.com/media/files/yolo9000.weights
+wget http://pjreddie.com/media/files/yolov2.weights
+wget http://pjreddie.com/media/files/yolov3.weights

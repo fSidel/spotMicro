@@ -6,11 +6,8 @@ from cv_bridge import CvBridge
 import cv2 
 
 """
-# we will send messages in form of images consequently, we need to import Image 
-# cv_bridge is a package that consists of a library for converting OpenCV images (of type cv::Mat)
-# into a ROS image message and for converting ROS image message back to OpenCV images
-# That is, it serves as a bridge between OpenCV and ROS
-# here we import OpenCV
+# This node subscribes to the camera publisher. The receiving messages are ROS images data types
+# and we use cv_bridge to switch back and forth between ROS and OpenCV images.
 """
 
 subscriberNodeName='camera_sensor_subscriber'
@@ -19,8 +16,8 @@ topicName='video_topic'
 
 def callbackFunction(message):
 	"""
-	This function is called every time a message arrives. This message is a
-	cv image data type and it will be converted into a ros image.
+	This function is called every time a message arrives. The received message 
+	is a ros image data type and it will be converted into a cv image.
 	Afterwards we print the image to the screen.
 	"""
 	
