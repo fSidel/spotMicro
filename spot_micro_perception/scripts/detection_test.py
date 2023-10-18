@@ -67,13 +67,19 @@ while capture.isOpened():
    network.setInput(blob)
    output = network.forward()
 
-   # The output is an array 1*1*n*7 with n number of detections,
-   # each detection is stored in the [0, 0, idx, :] value
-   # of the array
-
-   # The detection is a array structured like this :
+   # MobileNet networks produce an array 1*1*n*7 with n number of detections,
+   # each detection is stored in the [0, 0, idx, :] value of the array.
+   # The detection is an array structured like this :
    # [batchId, classId, confidence, leftCoord, topCoord, rightCoord, bottomCoord]
-   for detection in output[0][0]:
+
+
+   # YOLO networks produce an array 1*n with n number of detections,
+   # each deterction is an array containing the center (x,y) coordinates of the
+   # boundary box along with the height and the width of each
+   # box. Thus it is structured like this:
+   # [centerX, centerY, width, height]       (see Balaji Srinivasan's video)
+   for detection in output:
+      print(detection)
 
 
 
