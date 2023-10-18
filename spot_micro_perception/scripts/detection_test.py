@@ -65,8 +65,16 @@ while capture.isOpened():
    # and retrieving the output
    blob = cv2.dnn.blobFromImage(cv2.resize(image, (model_height, model_width)))
    network.setInput(blob)
-   detections = network.forward()
-   
+   output = network.forward()
+
+   # The output is an array 1*1*n*7 with n number of detections,
+   # each detection is stored in the [0, 0, idx, :] value
+   # of the array
+
+   # The detection is a array structured like this :
+   # [batchId, classId, confidence, leftCoord, topCoord, rightCoord, bottomCoord]
+   for detection in output[0][0]:
+
 
 
    break
