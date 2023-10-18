@@ -1,0 +1,31 @@
+{
+    "yolo-voc": {
+        "width": 416, 
+        "height": 416
+    },
+
+    "yolov2-tiny-voc": {
+        "width": 416, 
+        "height": 416
+    },
+
+    "yolov2-voc": {
+        "width": 416, 
+        "height": 416
+    },
+
+    "yolo9000": {
+        "width": 544, 
+        "height": 544
+    },
+
+    "yolov2": {
+        "width": 416, 
+        "height": 416
+    },
+
+    "yolov3": {
+        "width": 416, 
+        "height": 416
+    }
+}
