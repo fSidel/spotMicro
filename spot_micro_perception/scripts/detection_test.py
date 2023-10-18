@@ -61,6 +61,10 @@ while capture.isOpened():
    success, image = capture.read()
    image_height, image_width, channels = image.shape
 
+   #cv2.imshow("shot", image)
+   #cv2.waitKey(0)
+   #cv2.destroyAllWindows()
+
    # Generating blob, passing it as input in the network
    # and retrieving the output
    blob = cv2.dnn.blobFromImage(cv2.resize(image, (model_height, model_width)))
@@ -80,11 +84,9 @@ while capture.isOpened():
    # [centerX, centerY, width, height]       (see Balaji Srinivasan's video)
    for detection in output:
       print(detection)
-
-
+      break
 
    break
-
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
