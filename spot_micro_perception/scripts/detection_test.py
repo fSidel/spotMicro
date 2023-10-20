@@ -122,6 +122,7 @@ while capture.isOpened():
 
 
    print(coords, confidences, class_ids)
+   #TODO: FIX NON MAXIMUM SUPPRESSION
    #boxes = cv2.dnn.NMSBoxes(coords, confidences, confidence_threshold, 0.2)
    cv2.imshow("detections", image)
    if cv2.waitKey(10) & 0xFF == ord('q'):
