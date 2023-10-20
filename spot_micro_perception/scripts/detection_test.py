@@ -16,7 +16,6 @@ rospack = rospkg.RosPack()
 pkgdir = rospack.get_path('spot_micro_perception')
 
 
-
 # Loads correct weights and configurations
 # to initialize the neural network.
 with open(pkgdir + '/configs/models_dictionary.json', 'r') as f:
@@ -33,6 +32,13 @@ weight = model_setup['weight']
 cfg_path = os.path.join(pkgdir, cfg)
 weight_path = os.path.join(pkgdir, weight)
 labels_path = os.path.join(pkgdir, labels)
+
+try:
+    if os.stat(weight_path).st_size > 0:
+       print("weight_path found")
+except OSError:
+    print("weight_path missing, follow the instructions in /configs/networks/weights_download_instructions.txt")
+    exit()
 
 network = cv2.dnn.readNetFromDarknet(cfg_path, weight_path)
 
