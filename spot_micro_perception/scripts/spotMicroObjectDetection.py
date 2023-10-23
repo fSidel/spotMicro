@@ -24,20 +24,33 @@ class SpotMicroObjectDetection():
 
         self.bridgeObject = CvBridge()
 
+
+    def loadModel(self):
+        pass
+    
     
     def detectionPublish(self):
         pass
 
 
-    def cameraCallback(self):
-        pass
+    def cameraCallback(self, message):
+        rospy.loginfo("received a video message/frame")
+        convertedFrameBackToCV=self.bridgeObject.imgmsg_to_cv2(message)
+        cv2.imshow("camera",convertedFrameBackToCV)
+        cv2.waitKey(1)
 
 
     def run(self):
-        rospy.Subscriber(self.subscribedTopic, 
+        rospy.Subscriber(self.subcribedTopic, 
                          Image, 
                          self.cameraCallback)
         rospy.spin()
+
+        self.weights = rospy.get_param('~model_weights')
+        self.cfg = rospy.get_param('~model_cfg')
+
+        rospy.loginfo(self.weights)
+        rospy.loginfo(self.cfg)
 
 
 if __name__ == "__main__":
