@@ -45,11 +45,11 @@ class SpotMicroObjectDetection():
         rospy.loginfo("load neural net config path: " + self.cfg)
         rospy.loginfo("load model labels path: " + self.labels)
 
+        with open(self.labels) as labels:
+            self.classes = labels.read().splitlines()
 
-        
-        
-    
-    
+
+
     def detectionPublish(self):
         pass
 
