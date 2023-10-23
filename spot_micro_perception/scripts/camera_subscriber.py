@@ -14,16 +14,17 @@ back and forth between ROS and OpenCV images.
 
 class CameraSubscriber():
     nodeName = "camera_sensor_subscriber"
-    topicName = "video_topic"
+    subscribedTopic = "video_topic"
 
 
     def __init__(self):
         rospy.init_node(self.nodeName,
                         anonymous=True)
+        
         self.bridgeObject = CvBridge()
 
     
-    def videoCallback(self, message):
+    def cameraCallback(self, message):
         """
 	    This function is called every time a message arrives. The received message 
 	    is a ros image data type and it will be converted into a cv image.
@@ -37,7 +38,9 @@ class CameraSubscriber():
 
 
     def run(self):
-        rospy.Subscriber(self.topicName, Image, self.videoCallback)
+        rospy.Subscriber(self.subscribedTopic,
+                         Image,
+                         self.cameraCallback)
         rospy.spin()
 
 
