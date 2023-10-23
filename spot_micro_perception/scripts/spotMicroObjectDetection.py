@@ -27,6 +27,7 @@ class SpotMicroObjectDetection():
 
     def loadModel(self):
         pass
+        
     
     
     def detectionPublish(self):
@@ -45,10 +46,8 @@ class SpotMicroObjectDetection():
                          Image, 
                          self.cameraCallback)
         rospy.spin()
-
         self.weights = rospy.get_param('~model_weights')
         self.cfg = rospy.get_param('~model_cfg')
-
         rospy.loginfo(self.weights)
         rospy.loginfo(self.cfg)
 
