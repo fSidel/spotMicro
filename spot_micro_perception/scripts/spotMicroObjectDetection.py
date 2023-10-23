@@ -33,20 +33,34 @@ class SpotMicroObjectDetection():
         self.bridgeObject = CvBridge()
 
 
+    def loadLabels(self):
+        self.labels = rospy.get_param('~model_labels')
+
+        with open(self.labels) as labels:
+            self.classes = labels.read().splitlines()
+        rospy.loginfo("load model labels path: " + self.labels)
+
+        self.colors = np.random.uniform(0, 255, size=(len(self.classes), 3))
+
+
     def loadModel(self):
         self.weights = rospy.get_param('~model_weights')
         self.cfg = rospy.get_param('~model_cfg')
-        self.labels = rospy.get_param('~model_labels')
 
-        if not (os.stat(self.weights).st_size > 0 and os.stat(self.cfg).st_size > 0 and os.stat(self.labels).st_size > 0):
+        if not (os.stat(self.weights).st_size > 0 
+                and os.stat(self.cfg).st_size > 0 
+                and os.stat(self.labels).st_size > 0):
             rospy.loginfo(MISSING_FILES_ERROR)
 
         rospy.loginfo("load weights path: " + self.weights)
         rospy.loginfo("load neural net config path: " + self.cfg)
-        rospy.loginfo("load model labels path: " + self.labels)
 
-        with open(self.labels) as labels:
-            self.classes = labels.read().splitlines()
+        if (self.weights.endswith(".weights") 
+            and self.cfg.endswith(".cfg")):
+            pass
+        else:
+            pass
+    
 
 
 
