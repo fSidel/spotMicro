@@ -1,4 +1,13 @@
 <launch>
-    <include file="$(find spot_micro_perception)/launch/network_params.launch"/>
-    <include file="$(find spot_micro_perception)/launch/camera.launch"/>
+
+    <arg name="no_model" default="false"/>
+    
+    <group if="$(arg no_model)">
+        <include file="$(find spot_micro_perception)/launch/camera.launch"/>
+    </group>
+
+    <group unless="$(arg no_model)">
+        <include file="$(find spot_micro_perception)/launch/network_params.launch"/>
+    </group>
+    
 </launch>

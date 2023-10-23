@@ -1,0 +1,13 @@
+<launch>
+
+    <node pkg="spot_micro_perception" 
+    type="camera_publisher.py" 
+    name="camera_publisher" 
+    output="screen"/>
+
+    <node pkg="spot_micro_perception" 
+    type="spotMicroObjectDetection" 
+    name="detection_publisher" 
+    output="screen"/>
+
+</launch>
