@@ -12,8 +12,8 @@
     type="spotMicroObjectDetection.py" 
     name="detection_publisher" 
     output="screen">
-        <param name="model_weights" value="$(arg weights)"/>
-        <param name="model_cfg" value="$(arg cfg)"/>
+        <param name="model_weights" value="$(find spot_micro_perception)/configs/networks/$(arg weights)"/>
+        <param name="model_cfg" value="$(find spot_micro_perception)/configs/networks/$(arg cfg)"/>
     </node>
 
 </launch>
