@@ -12,6 +12,14 @@ import numpy as np
 import cv2
 
 
+MISSING_FILES_ERROR = """
+Paths Not Found! 
+Check if the weights, cfg and labels loaded are correct.
+If the default files are missing follow instructions 
+in weights_download_instruction.
+"""
+
+
 class SpotMicroObjectDetection():  
     nodeName = "object_detection_publisher"
     topicName = "detection_topic" 
@@ -26,7 +34,19 @@ class SpotMicroObjectDetection():
 
 
     def loadModel(self):
-        pass
+        self.weights = rospy.get_param('~model_weights')
+        self.cfg = rospy.get_param('~model_cfg')
+        self.labels = rospy.get_param('~model_labels')
+
+        if not (os.stat(self.weights).st_size > 0 and os.stat(self.cfg).st_size > 0 and os.stat(self.labels).st_size > 0):
+            rospy.loginfo(MISSING_FILES_ERROR)
+
+        rospy.loginfo("load weights path: " + self.weights)
+        rospy.loginfo("load neural net config path: " + self.cfg)
+        rospy.loginfo("load model labels path: " + self.labels)
+
+
+        
         
     
     
@@ -42,14 +62,13 @@ class SpotMicroObjectDetection():
 
 
     def run(self):
+        self.loadModel()
         rospy.Subscriber(self.subcribedTopic, 
                          Image, 
                          self.cameraCallback)
         rospy.spin()
-        self.weights = rospy.get_param('~model_weights')
-        self.cfg = rospy.get_param('~model_cfg')
-        rospy.loginfo(self.weights)
-        rospy.loginfo(self.cfg)
+
+
 
 
 if __name__ == "__main__":
