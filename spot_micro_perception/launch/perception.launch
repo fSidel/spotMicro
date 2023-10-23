@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find spot_micro_perception)/launch/network_params.launch"/>
+    <include file="$(find spot_micro_perception)/launch/camera.launch"/>
+</launch>

@@ -1,0 +1,25 @@
+---
+yolo-voc:
+  cfg: configs/networks/yolo-voc.cfg
+  weight: configs/networks/yolo-voc.weights
+  labels: configs/labels/voc.txt
+yolov2-tiny-voc:
+  cfg: configs/networks/yolov2-tiny-voc.cfg
+  weight: configs/networks/yolov2-tiny-voc.weights
+  labels: configs/labels/voc.txt
+yolov2-voc:
+  cfg: configs/networks/yolov2-voc.cfg
+  weight: configs/networks/yolov2-voc.weights
+  labels: configs/labels/voc.txt
+yolo9000:
+  cfg: configs/networks/yolo9000.cfg
+  weight: configs/networks/yolo9000.weights
+  labels: configs/labels/voc.txt
+yolov2:
+  cfg: configs/networks/yolov2.cfg
+  weight: configs/networks/yolov2.weights
+  labels: configs/labels/coco.txt
+yolov3:
+  cfg: configs/networks/yolov3.cfg
+  weight: configs/networks/yolov3.weights
+  labels: configs/labels/coco.txt
