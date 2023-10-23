@@ -22,16 +22,22 @@ class SpotMicroObjectDetection():
         rospy.init_node(self.nodeName, 
                         anonymous=True)
 
+        self.bridgeObject = CvBridge()
+
+    
+    def detectionPublish(self):
+        pass
 
 
-    def callbackFunction(self):
+    def cameraCallback(self):
         pass
 
 
     def run(self):
         rospy.Subscriber(self.subscribedTopic, 
                          Image, 
-                         self.callbackFunction)
+                         self.cameraCallback)
+        rospy.spin()
 
 
 if __name__ == "__main__":
