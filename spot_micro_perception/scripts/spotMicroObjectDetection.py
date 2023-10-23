@@ -55,11 +55,12 @@ class SpotMicroObjectDetection():
         rospy.loginfo("load weights path: " + self.weights)
         rospy.loginfo("load neural net config path: " + self.cfg)
 
-        if (self.weights.endswith(".weights") 
-            and self.cfg.endswith(".cfg")):
-            pass
-        else:
-            pass
+        #TODO: Add more models instead of relying only on DarkNet 
+        # if (self.weights.endswith(".weights") 
+        #     and self.cfg.endswith(".cfg")):
+        #     pass
+        # else:
+        #     pass
     
 
 
