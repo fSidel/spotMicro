@@ -5,9 +5,15 @@
     name="camera_publisher" 
     output="screen"/>
 
+    <arg name="weights" default="$(find spot_micro_perception)/configs/networks/yolov3.weights"/>
+    <arg name="cfg" default="$(find spot_micro_perception)/configs/networks/yolov3.cfg"/>        
+        
     <node pkg="spot_micro_perception" 
-    type="spotMicroObjectDetection" 
+    type="spotMicroObjectDetection.py" 
     name="detection_publisher" 
-    output="screen"/>
+    output="screen">
+        <param name="model_weights" value="$(arg weights)"/>
+        <param name="model_cfg" value="$(arg cfg)"/>
+    </node>
 
 </launch>
