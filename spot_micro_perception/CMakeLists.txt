@@ -164,7 +164,6 @@ include_directories(
  catkin_install_python(PROGRAMS
    scripts/camera_publisher.py
    scripts/camera_subscriber.py
-   scripts/camera_publisher_OOP.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
