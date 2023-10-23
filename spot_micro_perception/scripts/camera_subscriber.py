@@ -1,35 +1,43 @@
 #!/usr/bin/env python
 
-import rospy
+import rospy  
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge 
-import cv2 
-
-"""
-# This node subscribes to the camera publisher. The receiving messages are ROS images data types
-# and we use cv_bridge to switch back and forth between ROS and OpenCV images.
-"""
-
-subscriberNodeName='camera_sensor_subscriber'
-topicName='video_topic'
+from cv_bridge import CvBridge
+import cv2
 
 
-def callbackFunction(message):
-	"""
-	This function is called every time a message arrives. The received message 
-	is a ros image data type and it will be converted into a cv image.
-	Afterwards we print the image to the screen.
-	"""
-	
-	bridgeObject=CvBridge()
-	rospy.loginfo("received a video message/frame")
-	convertedFrameBackToCV=bridgeObject.imgmsg_to_cv2(message)
-	
-	cv2.imshow("camera",convertedFrameBackToCV)
-	cv2.waitKey(1)
-	
+class CameraPublisher():
+    nodeName = "camera_sensor_publisher"
+    topicName = "video_topic"
 
-rospy.init_node(subscriberNodeName, anonymous=True)
-rospy.Subscriber(topicName,Image, callbackFunction)
-rospy.spin()
-cv2.destroyAllWindows()
+
+    def __init__(self):
+        rospy.init_node(self.nodeName,
+                        anonymous=True)
+        
+        self.capture_pub = rospy.Publisher(self.topicName, Image, queue_size=60)
+        self.rate = rospy.Rate(30)
+
+        self.videoCaptureObject = cv2.VideoCapture(0)
+        self.bridgeObject = CvBridge()
+        
+    
+    def videoCapture(self):
+        frameStatus, capturedFrame = self.videoCaptureObject.read()
+
+        if frameStatus == True:
+            rospy.loginfo("Video frame captured and published")
+            imageToPublish = self.bridgeObject.cv2_to_imgmsg(capturedFrame)
+            self.capture_pub.publish(imageToPublish)
+
+        self.rate.sleep()
+
+    
+    def run(self):
+        while not rospy.is_shutdown():
+            self.videoCapture()
+
+
+if __name__ == "__main__":
+    cp = CameraPublisher()
+    cp.run()
