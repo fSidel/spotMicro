@@ -58,9 +58,17 @@ class SpotMicroObjectDetection():
         #TODO: Add more models instead of relying only on DarkNet 
         # if (self.weights.endswith(".weights") 
         #     and self.cfg.endswith(".cfg")):
-        #     pass
-        # else:
-        #     pass
+        #     # FUNCTION WITH cv2.dnn.readNetFromDarknet()
+        # elif (self.weights.endswith(".caffemodel") 
+        #     and self.cfg.endswith(".prototxt")):
+        #     # FUNCTION WITH cv2.dnn.readNetFromCaffe()
+        # There is no support for PyTorch, the dnn in OpenCV
+        # as of 3.3.1 only supports Torch7 models and 
+        # no one really trains those anymore. In OpenCV >=4.5
+        # the dnn module can convert PyTorch models into ONNX formats
+        # and those are natively supported by OpenCV with the
+        # function cv2.dnn.readNetFromONNX()
+        # .....
     
 
 
@@ -77,6 +85,7 @@ class SpotMicroObjectDetection():
 
 
     def run(self):
+        self.loadLabels()
         self.loadModel()
         rospy.Subscriber(self.subcribedTopic, 
                          Image, 
