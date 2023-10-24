@@ -1,11 +1,24 @@
 <launch>
-    <arg name="no_model" default="false"/>  
+    <!-- 
+        Arguments to launch camera without loading a model or 
+        to launch a debug window to see the boundaries detection 
+        -->
+    <arg name="no_model" default="false"/> 
+    <arg name="boundaries_debug" default="false"/>  
     
+
+    <!-- 
+        Launch camera publisher node 
+    -->
     <node pkg="spot_micro_perception" 
     type="cameraPublisher.py" 
     name="camera_publisher_node" 
     output="screen"/>
 
+
+    <!-- 
+        When no_model:=true launch camera subscriber node without object detection 
+    -->
     <group if="$(arg no_model)">
         <node pkg="spot_micro_perception" 
         type="cameraSubscriber.py" 
@@ -13,6 +26,22 @@
         output="screen"/>
     </group>
 
+
+    <!-- 
+        When no_model:=false the system needs a model for object detection, we specify a default but
+        another alternative may be provided with: 
+
+        weights:= name_of_weights, 
+        cfg:= name_of_cfg, 
+        labels:= name_of_labels, 
+        width:= input_width_of_model,
+        height:= input_height_of_model,
+
+        Note! For  weights and cfg the launch files expects the files to be in the folder:
+        ..../spot_micro_perception/configs/networks/
+        While the labels are expected to be in 
+        ..../spot_micro_perception/configs/labels/
+     -->
     <group unless="$(arg no_model)">
         <arg name="weights" default="yolov2.weights"/>
         <arg name="cfg" default="yolov2.cfg"/>  
@@ -20,8 +49,12 @@
         <arg name="width" default="416"/>
         <arg name="height" default="416"/>
         
-           
-
+        <!-- 
+            Launches the object detection manager node, this node  tries
+            to recognize the architecture of the model and load it with the 
+            appropriate tools. As of now only Darknet is supported but after
+            refactoring to ROS Humble support will be improved.
+        -->
         <node pkg="spot_micro_perception" 
         type="spotMicroDetectionManager.py" 
         name="detection_publisher" 
@@ -31,7 +64,19 @@
             <param name="model_labels" value="$(find spot_micro_perception)/configs/labels/$(arg labels)"/>
             <param name="model_width" value="$(arg width)"/>
             <param name="model_height" value="$(arg height)"/>
-            
         </node>
+     
+        <!-- 
+            Launches the object detection mdebuggeranager node. This greatly
+            degrades performance so only launch this when checking if the model
+            is working properly.
+        -->
+        <group if="$(arg boundaries_debug)">
+            <node pkg="spot_micro_perceptio" 
+            type="opencvDetectionDebug.py" 
+            name="detection_debug" 
+            output="screen"/>
+        </group>
+
     </group>
 </launch>
