@@ -29,8 +29,8 @@
             <param name="model_weights" value="$(find spot_micro_perception)/configs/networks/$(arg weights)"/>
             <param name="model_cfg" value="$(find spot_micro_perception)/configs/networks/$(arg cfg)"/>
             <param name="model_labels" value="$(find spot_micro_perception)/configs/labels/$(arg labels)"/>
-            <param command="model_width" value="$(arg width)"/>
-            <param command="model_height" value="$(arg height)"/>
+            <param name="model_width" value="$(arg width)"/>
+            <param name="model_height" value="$(arg height)"/>
             
         </node>
     </group>
