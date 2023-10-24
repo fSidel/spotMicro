@@ -67,7 +67,7 @@
         </node>
      
         <!-- 
-            Launches the object detection mdebuggeranager node. This greatly
+            Launches the object detection debugger node. This greatly
             degrades performance so only launch this when checking if the model
             is working properly.
         -->
