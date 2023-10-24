@@ -17,7 +17,7 @@ in weights_download_instruction.
 class SpotMicroObjectManager():
     nodeName = "detection_manager"
     packageName = 'spot_micro_perception'
-    testNode = 'spotMicroObjectDetection.py'
+    darknetNode = 'spotMicroDarknetDetection.py'
 
     def __init__(self):
         """
@@ -71,7 +71,7 @@ class SpotMicroObjectManager():
         if (self.weights.endswith(".weights") 
             and self.cfg.endswith(".cfg")):
             self.YOLO = roslaunch.core.Node(package=SpotMicroObjectManager.packageName, 
-                                            node_type=SpotMicroObjectManager.testNode,
+                                            node_type=SpotMicroObjectManager.darknetNode,
                                             name="detection_node",
                                             output='screen')
             self.launcher.launch(self.YOLO)
