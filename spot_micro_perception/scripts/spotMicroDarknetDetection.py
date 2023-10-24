@@ -98,7 +98,9 @@ class SpotMicroObjectDetection():
                     # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
                     
                     rospy.loginfo("Detections found and coordinates published")
-                    self.detection_pub.publish(Int32MultiArray().data([id, centerX, centerY]))
+                    arrayToPublish = Int32MultiArray()
+                    arrayToPublish.data = [id, centerX, centerY]
+                    self.detection_pub.publish(arrayToPublish)
 
         # cv2.imshow("detections", image)
         # cv2.waitKey(1)
