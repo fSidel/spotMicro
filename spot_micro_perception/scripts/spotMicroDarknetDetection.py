@@ -84,6 +84,7 @@ class SpotMicroObjectDetection():
                     boundary = detection[0:4] * np.array([image_width, image_height, image_width, image_height])
                     (centerX, centerY, boundary_width, boundary_height) = boundary.astype("int")
 
+                    #TODO: Add a node to display detected images when not in headless mode
                     # Determine the position of the lower left corner
                     # ll_x = int(centerX - boundary_width / 2)
                     # ll_y = int(centerY - boundary_height / 2)
