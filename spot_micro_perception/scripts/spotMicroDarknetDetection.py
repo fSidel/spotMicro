@@ -85,13 +85,13 @@ class SpotMicroObjectDetection():
                     (centerX, centerY, boundary_width, boundary_height) = boundary.astype("int")
 
                     # Determine the position of the lower left corner
-                    ll_x = int(centerX - boundary_width / 2)
-                    ll_y = int(centerY - boundary_height / 2)
+                    # ll_x = int(centerX - boundary_width / 2)
+                    # ll_y = int(centerY - boundary_height / 2)
 
                     # Update list of detections higher then our threshold
-                    coords.append([ll_x, ll_y, boundary_width, boundary_height])
-                    confidences.append(float(confidence))
-                    class_ids.append(id)
+                    # coords.append([ll_x, ll_y, boundary_width, boundary_height])
+                    # confidences.append(float(confidence))
+                    # class_ids.append(id)
 
                     # cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
                     # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
