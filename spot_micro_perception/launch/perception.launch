@@ -16,7 +16,11 @@
     <group unless="$(arg no_model)">
         <arg name="weights" default="yolov2.weights"/>
         <arg name="cfg" default="yolov2.cfg"/>  
-        <arg name="labels" default="coco.txt"/>   
+        <arg name="labels" default="coco.txt"/>
+        <arg name="width" default="416"/>
+        <arg name="height" default="416"/>
+        
+           
 
         <node pkg="spot_micro_perception" 
         type="spotMicroDetectionManager.py" 
@@ -25,6 +29,9 @@
             <param name="model_weights" value="$(find spot_micro_perception)/configs/networks/$(arg weights)"/>
             <param name="model_cfg" value="$(find spot_micro_perception)/configs/networks/$(arg cfg)"/>
             <param name="model_labels" value="$(find spot_micro_perception)/configs/labels/$(arg labels)"/>
+            <param command="model_width" value="$(arg width)"/>
+            <param command="model_height" value="$(arg height)"/>
+            
         </node>
     </group>
 </launch>

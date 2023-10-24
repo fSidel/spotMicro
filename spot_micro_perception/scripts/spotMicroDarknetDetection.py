@@ -16,6 +16,7 @@ class SpotMicroObjectDetection():
     nodeName = "object_detection_publisher"
     topicName = "detection_topic" 
     subcribedTopic = "video_topic"
+    confidenceThresh = 0.5
 
 
     def __init__(self):
@@ -38,6 +39,8 @@ class SpotMicroObjectDetection():
     def loadModel(self):
         self.weights = rospy.get_param("/detection_publisher/model_weights")
         self.cfg = rospy.get_param("/detection_publisher/model_cfg")
+        self.width = rospy.get_param('/detection_publisher/model_width')
+        self.height = rospy.get_param('/detection_publisher/model_height')
 
         self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
         rospy.loginfo("loaded Darknet")
@@ -52,9 +55,47 @@ class SpotMicroObjectDetection():
 
     def cameraCallback(self, message):
         rospy.loginfo("received a video message/frame")
-        convertedFrameBackToCV=self.bridgeObject.imgmsg_to_cv2(message)
-        cv2.imshow("camera",convertedFrameBackToCV)
-        cv2.waitKey(1)
+        image=self.bridgeObject.imgmsg_to_cv2(message)
+        image_height, image_width, channels = image.shape
+        
+        blob = cv2.dnn.blobFromImage(image, 1/255.0, (self.height, self.width), swapRB=True)
+        self.network.setInput(blob)
+        outputs = self.network.forward(self.output_layers)
+
+        class_ids = []
+        confidences = []
+        coords = [] 
+
+        for out in outputs:
+            for detection in out:
+                scores = detection[5:]
+                id = np.argmax(scores)
+                confidence = scores[id]
+
+                if(confidence > SpotMicroObjectDetection.confidenceThresh):
+                    # Scaling back the size of the boundary, because
+                    # the predictions are made on a scaled down image.
+                    # this operation may result in floating values,
+                    # since there are no fractional pixels we truncate
+                    # and turn the float into an int
+                    boundary = detection[0:4] * np.array([image_width, image_height, image_width, image_height])
+                    (centerX, centerY, boundary_width, boundary_height) = boundary.astype("int")
+
+                    # Determine the position of the lower left corner
+                    ll_x = int(centerX - boundary_width / 2)
+                    ll_y = int(centerY - boundary_height / 2)
+
+                    # Update list of detections higher then our threshold
+                    coords.append([ll_x, ll_y, boundary_width, boundary_height])
+                    confidences.append(float(confidence))
+                    class_ids.append(id)
+
+                    cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
+                    cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
+
+            print(coords, confidences, class_ids)
+
+        cv2.imshow("detections", image)
 
 
     def run(self):
