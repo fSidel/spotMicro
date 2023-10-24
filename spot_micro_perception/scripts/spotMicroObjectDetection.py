@@ -4,7 +4,6 @@
 Class for sending coordinates of detected objects to spot micro walk and angle node
 """
 import rospy  
-import sys
 import os
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
@@ -69,6 +68,11 @@ class SpotMicroObjectDetection():
         # and those are natively supported by OpenCV with the
         # function cv2.dnn.readNetFromONNX()
         # .....
+
+        self.network = cv2.dnn.readNetFromDarknet(self.cfg_path, self.weight_path)
+        self.layer_names = self.network.getLayerNames()
+        self.output_layers = [self.layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]
+
     
 
 
