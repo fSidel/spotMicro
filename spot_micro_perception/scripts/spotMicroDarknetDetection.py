@@ -29,20 +29,6 @@ class SpotMicroObjectDetection():
         self.detection_pub = rospy.Publisher(self.topicName, Int32MultiArray, queue_size=60)
         self.rate = rospy.Rate(2)
 
-        
-    def loadLabels(self):
-        self.labels = rospy.get_param("/detection_publisher/model_labels")
-
-        with open(self.labels) as labels:
-            self.classes = labels.read().splitlines()
-        rospy.loginfo("load model labels path: " + self.labels)
-
-        #TODO: Decouple realtime detection in opencv showim from the node
-        # Determines colors for the boundary boxes used
-        # in the detection of every instance of a class
-        # trained in the network.
-        # self.colors = np.random.uniform(0, 255, size=(len(self.classes), 3))
-
 
     def loadModel(self):
         # Loading parameters and darknet network
@@ -117,7 +103,6 @@ class SpotMicroObjectDetection():
 
 
     def run(self):
-        self.loadLabels()
         self.loadModel()
         rospy.Subscriber(self.subcribedTopic, 
                          Image, 

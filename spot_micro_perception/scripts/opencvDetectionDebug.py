@@ -3,7 +3,8 @@
 import rospy
 from std_msgs.msg import Int32MultiArray
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge 
+from cv_bridge import CvBridge
+import numpy as np 
 import cv2
 
 """
@@ -26,6 +27,11 @@ class OpenCVDetectionDebug():
                         anonymous=True)
         
         self.bridgeObject = CvBridge()
+
+        with open(rospy.get_param('/detection_publisher/model_labels')) as labels:
+            self.classes = labels.read().splitlines()
+
+        self.colors = np.random.uniform(0, 255, size=(len(rospy.get_param('/detection_publisher/model_labels')), 3))
         
 
     def detectionCallback(self, message):
