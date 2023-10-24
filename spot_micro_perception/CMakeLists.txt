@@ -164,7 +164,7 @@ include_directories(
  catkin_install_python(PROGRAMS
    scripts/camera_publisher.py
    scripts/camera_subscriber.py
-   scripts/spotMicroObjectDetection.py
+   scripts/spotMicroDarknetDetection.py
    scripts/spotMicroDetectionManager.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
