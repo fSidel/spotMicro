@@ -27,7 +27,7 @@ class SpotMicroObjectDetection():
         self.bridgeObject = CvBridge()
         
         self.detection_pub = rospy.Publisher(self.topicName, Int32MultiArray, queue_size=60)
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(2)
 
         
     def loadLabels(self):
