@@ -72,7 +72,7 @@
             is working properly.
         -->
         <group if="$(arg boundaries_debug)">
-            <node pkg="spot_micro_perceptio" 
+            <node pkg="spot_micro_perception" 
             type="opencvDetectionDebug.py" 
             name="detection_debug" 
             output="screen"/>
