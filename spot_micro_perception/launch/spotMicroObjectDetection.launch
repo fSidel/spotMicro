@@ -1,21 +1,7 @@
 <launch>
-    <arg name="no_model" default="false"/>  
-    
-    <node pkg="spot_micro_perception" 
-    type="camera_publisher.py" 
-    name="camera_publisher_node" 
-    output="screen"/>
-
-    <group if="$(arg no_model)">
-        <node pkg="spot_micro_perception" 
-        type="camera_subscriber.py" 
-        name="camera_subscriber_node" 
-        output="screen"/>
-    </group>
-
-    <group unless="$(arg no_model)">
-        <arg name="weights" default="yolov2.weights"/>
-        <arg name="cfg" default="yolov2.cfg"/>  
+    <group>
+        <arg name="weights" default="yolov3.weights"/>
+        <arg name="cfg" default="yolov3.cfg"/>  
         <arg name="labels" default="coco.txt"/>   
 
         <node pkg="spot_micro_perception" 

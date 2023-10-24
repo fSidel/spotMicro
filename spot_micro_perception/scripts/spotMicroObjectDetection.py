@@ -4,19 +4,12 @@
 Class for sending coordinates of detected objects to spot micro walk and angle node
 """
 import rospy  
+import sys
 import os
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import numpy as np
 import cv2
-
-
-MISSING_FILES_ERROR = """
-Paths Not Found! 
-Check if the weights, cfg and labels loaded are correct.
-If the default files are missing follow instructions 
-in weights_download_instruction.
-"""
 
 
 class SpotMicroObjectDetection():  
@@ -33,7 +26,7 @@ class SpotMicroObjectDetection():
 
 
     def loadLabels(self):
-        self.labels = rospy.get_param('~model_labels')
+        self.labels = rospy.get_param("/detection_publisher/model_labels")
 
         with open(self.labels) as labels:
             self.classes = labels.read().splitlines()
@@ -43,33 +36,13 @@ class SpotMicroObjectDetection():
 
 
     def loadModel(self):
-        self.weights = rospy.get_param('~model_weights')
-        self.cfg = rospy.get_param('~model_cfg')
+        self.weights = rospy.get_param("/detection_publisher/model_weights")
+        self.cfg = rospy.get_param("/detection_publisher/model_cfg")
 
-        if not (os.stat(self.weights).st_size > 0 
-                and os.stat(self.cfg).st_size > 0 
-                and os.stat(self.labels).st_size > 0):
-            rospy.loginfo(MISSING_FILES_ERROR)
+        self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
+        rospy.loginfo("loaded Darknet")
+        
 
-        rospy.loginfo("load weights path: " + self.weights)
-        rospy.loginfo("load neural net config path: " + self.cfg)
-
-        #TODO: Add more models instead of relying only on DarkNet 
-        # if (self.weights.endswith(".weights") 
-        #     and self.cfg.endswith(".cfg")):
-        #     # FUNCTION WITH cv2.dnn.readNetFromDarknet()
-        # elif (self.weights.endswith(".caffemodel") 
-        #     and self.cfg.endswith(".prototxt")):
-        #     # FUNCTION WITH cv2.dnn.readNetFromCaffe()
-        # There is no support for PyTorch, the dnn in OpenCV
-        # as of 3.3.1 only supports Torch7 models and 
-        # no one really trains those anymore. In OpenCV >=4.5
-        # the dnn module can convert PyTorch models into ONNX formats
-        # and those are natively supported by OpenCV with the
-        # function cv2.dnn.readNetFromONNX()
-        # .....
-
-        self.network = cv2.dnn.readNetFromDarknet(self.cfg_path, self.weight_path)
         self.layer_names = self.network.getLayerNames()
         self.output_layers = [self.layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]
 

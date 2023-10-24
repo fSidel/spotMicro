@@ -4,6 +4,8 @@
 Class for sending coordinates of detected objects to spot micro walk and angle node
 """
 import rospy  
+import roslaunch
+import sys
 import os
 
 MISSING_FILES_ERROR = """
@@ -15,16 +17,20 @@ in weights_download_instruction.
 
 class SpotMicroObjectManager():
     nodeName = "detection_manager"
-
+    packageName = 'spot_micro_perception'
+    testNode = 'spotMicroObjectDetection.py'
 
     def __init__(self):
         """
         Node initialization. This node does not subscribe
         or publish to any topic. It's just an intermediary
-        to the node that  will actually publish the detections
+        to the node that  will actually publish the detections.
         """
         rospy.init_node(self.nodeName, 
                         anonymous=True)
+        
+        self.launcher = roslaunch.scriptapi.ROSLaunch()
+        self.launcher.start()
 
 
     def launchDetectionNode(self):
@@ -43,6 +49,7 @@ class SpotMicroObjectManager():
         # be used
         self.weights = rospy.get_param('~model_weights')
         self.cfg = rospy.get_param('~model_cfg')
+        self.labels = rospy.get_param('~model_labels')
 
 
         # Check if paths to weights and configuration
@@ -64,8 +71,11 @@ class SpotMicroObjectManager():
         # function cv2.dnn.readNetFromONNX(
         if (self.weights.endswith(".weights") 
             and self.cfg.endswith(".cfg")):
-            #TODO: NODE WITH cv2.dnn.readNetFromDarknet()
-            pass
+            self.YOLO = roslaunch.core.Node(package=SpotMicroObjectManager.packageName, 
+                                            node_type=SpotMicroObjectManager.testNode,
+                                            name="detection_node",
+                                            output='screen')
+            self.launcher.launch(self.YOLO)
         elif (self.weights.endswith(".caffemodel") 
             and self.cfg.endswith(".prototxt")):
             #TODO: NODE WITH cv2.dnn.readNetFromCaffe()
@@ -76,6 +86,7 @@ class SpotMicroObjectManager():
 
 
     def run(self):
+        self.launchDetectionNode()
         rospy.spin()
     
 
