@@ -166,6 +166,7 @@ include_directories(
    scripts/cameraSubscriber.py
    scripts/spotMicroDarknetDetection.py
    scripts/spotMicroDetectionManager.py
+   scripts/opencvDetectionDebug.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
