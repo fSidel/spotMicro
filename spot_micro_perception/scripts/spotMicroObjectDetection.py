@@ -42,7 +42,6 @@ class SpotMicroObjectDetection():
         self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
         rospy.loginfo("loaded Darknet")
         
-
         self.layer_names = self.network.getLayerNames()
         self.output_layers = [self.layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]
 
