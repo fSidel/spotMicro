@@ -7,6 +7,7 @@ import rospy
 import sys
 import os
 from sensor_msgs.msg import Image
+from std_msgs.msg import Int32MultiArray
 from cv_bridge import CvBridge
 import numpy as np
 import cv2
@@ -25,7 +26,7 @@ class SpotMicroObjectDetection():
 
         self.bridgeObject = CvBridge()
         
-        self.detection_pub = rospy.Publisher(self.topicName, np.array, queue_size=60)
+        self.detection_pub = rospy.Publisher(self.topicName, Int32MultiArray, queue_size=60)
         self.rate = rospy.Rate(15)
 
         
@@ -97,7 +98,7 @@ class SpotMicroObjectDetection():
                     # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
                     
                     rospy.loginfo("Detections found and coordinates published")
-                    self.detection_pub.publish(np.array([id, centerX, centerY]))
+                    self.detection_pub.publish(Int32MultiArray().data([id, centerX, centerY]))
 
         # cv2.imshow("detections", image)
         # cv2.waitKey(1)
