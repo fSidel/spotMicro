@@ -25,7 +25,7 @@ class SpotMicroObjectDetection():
 
         self.bridgeObject = CvBridge()
 
-
+        
     def loadLabels(self):
         self.labels = rospy.get_param("/detection_publisher/model_labels")
 
@@ -97,7 +97,7 @@ class SpotMicroObjectDetection():
                     # cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
                     # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
 
-            print(coords, confidences, class_ids)
+                    print(np.array([id, centerX, centerY]))
 
         # cv2.imshow("detections", image)
         # cv2.waitKey(1)
