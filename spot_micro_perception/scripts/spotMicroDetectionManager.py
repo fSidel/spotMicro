@@ -5,7 +5,6 @@ Class for sending coordinates of detected objects to spot micro walk and angle n
 """
 import rospy  
 import roslaunch
-import sys
 import os
 
 MISSING_FILES_ERROR = """
