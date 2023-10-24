@@ -24,6 +24,9 @@ class SpotMicroObjectDetection():
                         anonymous=True)
 
         self.bridgeObject = CvBridge()
+        
+        self.detection_pub = rospy.Publisher(self.topicName, np.array, queue_size=60)
+        self.rate = rospy.Rate(15)
 
         
     def loadLabels(self):
@@ -47,10 +50,6 @@ class SpotMicroObjectDetection():
         
         self.layer_names = self.network.getLayerNames()
         self.output_layers = [self.layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]   
-
-
-    def detectionPublish(self):
-        pass
 
 
     def cameraCallback(self, message):
@@ -96,8 +95,9 @@ class SpotMicroObjectDetection():
 
                     # cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
                     # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
-
-                    print(np.array([id, centerX, centerY]))
+                    
+                    rospy.loginfo("Detections found and coordinates published")
+                    self.detection_pub.publish(np.array([id, centerX, centerY]))
 
         # cv2.imshow("detections", image)
         # cv2.waitKey(1)
@@ -110,7 +110,6 @@ class SpotMicroObjectDetection():
                          Image, 
                          self.cameraCallback)
         rospy.spin()
-
 
 
 
