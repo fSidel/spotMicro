@@ -57,6 +57,9 @@ class SpotMicroObjectDetection():
         rospy.loginfo("received a video message/frame")
         image=self.bridgeObject.imgmsg_to_cv2(message)
         image_height, image_width, channels = image.shape
+
+        # cv2.imshow("normal", image)
+        # cv2.waitKey(1)
         
         blob = cv2.dnn.blobFromImage(image, 1/255.0, (self.height, self.width), swapRB=True)
         self.network.setInput(blob)
@@ -90,12 +93,13 @@ class SpotMicroObjectDetection():
                     confidences.append(float(confidence))
                     class_ids.append(id)
 
-                    cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
-                    cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
+                    # cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
+                    # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
 
             print(coords, confidences, class_ids)
 
-        cv2.imshow("detections", image)
+        # cv2.imshow("detections", image)
+        # cv2.waitKey(1)
 
 
     def run(self):
