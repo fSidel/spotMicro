@@ -37,10 +37,15 @@ class SpotMicroObjectDetection():
             self.classes = labels.read().splitlines()
         rospy.loginfo("load model labels path: " + self.labels)
 
-        self.colors = np.random.uniform(0, 255, size=(len(self.classes), 3))
+        #TODO: Decouple realtime detection in opencv showim from the node
+        # Determines colors for the boundary boxes used
+        # in the detection of every instance of a class
+        # trained in the network.
+        # self.colors = np.random.uniform(0, 255, size=(len(self.classes), 3))
 
 
     def loadModel(self):
+        # Loading parameters and darknet network
         self.weights = rospy.get_param("/detection_publisher/model_weights")
         self.cfg = rospy.get_param("/detection_publisher/model_cfg")
         self.width = rospy.get_param('/detection_publisher/model_width')
@@ -48,7 +53,13 @@ class SpotMicroObjectDetection():
 
         self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
         rospy.loginfo("loaded Darknet")
-        
+
+
+        # Provides names of the layers in the network. We must do this because YOLO
+        # makes predictions for three different scales of the image we have captured.
+        # Thus we must iterate every layer, find which layer in the network is
+        # an output layer and save these layers for later when we will filter
+        # out the detections from the background.
         self.layer_names = self.network.getLayerNames()
         self.output_layers = [self.layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]   
 
@@ -56,8 +67,7 @@ class SpotMicroObjectDetection():
     def cameraCallback(self, message):
         rospy.loginfo("received a video message/frame")
         image=self.bridgeObject.imgmsg_to_cv2(message)
-        image_height, image_width, channels = image.shape
-
+        # image_height, image_width, channels = image.shape
         # cv2.imshow("normal", image)
         # cv2.waitKey(1)
         
