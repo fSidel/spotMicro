@@ -67,7 +67,7 @@ class SpotMicroObjectDetection():
     def cameraCallback(self, message):
         rospy.loginfo("received a video message/frame")
         image=self.bridgeObject.imgmsg_to_cv2(message)
-        # image_height, image_width, channels = image.shape
+        image_height, image_width, channels = image.shape
         # cv2.imshow("normal", image)
         # cv2.waitKey(1)
         
