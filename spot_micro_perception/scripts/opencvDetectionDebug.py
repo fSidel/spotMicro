@@ -42,8 +42,6 @@ class OpenCVDetectionDebug():
          self.boundary_width, 
          self.boundary_height) = message.data
         
-        rospy.loginfo((self.id, self.centerX, self.centerY))
-        
         self.drawBoxes()
 
 

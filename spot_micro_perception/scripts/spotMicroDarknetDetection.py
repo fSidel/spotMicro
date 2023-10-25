@@ -85,8 +85,9 @@ class SpotMicroObjectDetection():
                                            centerY, 
                                            boundary_width, 
                                            boundary_height]
-                    
+                                        
                     self.detection_pub.publish(arrayToPublish)
+                    rospy.loginfo((id, centerX, centerY))
 
 
 
