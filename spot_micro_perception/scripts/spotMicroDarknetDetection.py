@@ -44,13 +44,17 @@ class SpotMicroObjectDetection():
         # an output layer and save these layers for later when we will filter
         # out the detections from the background.
         self.layer_names = self.network.getLayerNames()
-        self.output_layers = [self.layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]   
+
+        self.output_layers = [self.layer_names[i[0] - 1] 
+                              for i in self.network.getUnconnectedOutLayers()]   
 
 
     def cameraCallback(self, message):
         image=self.bridgeObject.imgmsg_to_cv2(message)
 
-        image_height, image_width, channels = image.shape
+        (image_height, 
+         image_width, 
+         channels) = image.shape
         
         blob = cv2.dnn.blobFromImage(image, 
                                      1/255.0, 
@@ -74,21 +78,18 @@ class SpotMicroObjectDetection():
                     # and turn the float into an int
                     
                     (centerX, 
-                     centerY, 
-                     boundary_width, 
-                     boundary_height) = (detection[0:4] * np.array([image_width, image_height, image_width, image_height])).astype("int")
+                     centerY) = (detection[0:2] * np.array([image_width, image_height])).astype("int")
 
                     
                     arrayToPublish = Int32MultiArray()
                     arrayToPublish.data = [id, 
                                            centerX, 
-                                           centerY, 
-                                           boundary_width, 
-                                           boundary_height]
-                                        
+                                           centerY]
+                    
                     self.detection_pub.publish(arrayToPublish)
-                    rospy.loginfo((id, centerX, centerY))
 
+                    rospy.loginfo("received coordinates of detected object")
+                    rospy.loginfo((id, centerX, centerY))
 
 
     def run(self):
