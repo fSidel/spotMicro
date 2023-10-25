@@ -35,15 +35,54 @@ class OpenCVDetectionDebug():
         
 
     def detectionCallback(self, message):
-        rospy.loginfo(message)
-        (self.id, self.centerX, self.centerY) = message.data
+        # Retrieves coordinates of the boundary box from detection node
+        (self.id, 
+         self.centerX, 
+         self.centerY, 
+         self.boundary_width, 
+         self.boundary_height) = message.data
+        
+        self.drawBoxes()
 
 
     def cameraCallback(self, message):   
-        rospy.loginfo("received a video message/frame")
-        self.convertedFrameBackToCV=self.bridgeObject.imgmsg_to_cv2(message)
-        cv2.imshow("camera", self.convertedFrameBackToCV)
+        # Retrieves image from camera node, converts it in a cv2 data type
+        # and gets information about the size of the image
+        rospy.loginfo("image acquired by debug node, processing cv output of detections...")
+        
+        self.image=self.bridgeObject.imgmsg_to_cv2(message)
+        (self.image_height, 
+         self.image_width, 
+         channels) = self.image.shape
+        
+
+
+    def drawBoxes(self):
+        ll_x = int(self.centerX - self.boundary_width / 2)
+        ll_y = int(self.centerY - self.boundary_height / 2)
+
+        cv2.drawMarker(self.image,
+                       (self.centerX, self.centerY),
+                       self.colors[self.id],
+                       markerType=cv2.MARKER_CROSS,
+                       markerSize=10
+                       )
+
+        cv2.rectangle(self.image, 
+                      (ll_x, ll_y), 
+                      (self.boundary_width, self.boundary_height), 
+                      self.colors[self.id])
+        
+        cv2.putText(self.image, 
+                    self.classes[self.id], 
+                    (ll_x, ll_y - 10), 
+                    cv2.FONT_HERSHEY_PLAIN, 
+                    fontScale=1, 
+                    color=self.colors[self.id])
+        
+        cv2.imshow("detections", self.image)
         cv2.waitKey(1)
+                    
 
 
     def run(self):

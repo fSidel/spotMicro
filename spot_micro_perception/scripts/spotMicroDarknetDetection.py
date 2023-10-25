@@ -4,8 +4,6 @@
 Class for sending coordinates of detected objects to spot micro walk and angle node
 """
 import rospy  
-import sys
-import os
 from sensor_msgs.msg import Image
 from std_msgs.msg import Int32MultiArray
 from cv_bridge import CvBridge
@@ -27,7 +25,7 @@ class SpotMicroObjectDetection():
         self.bridgeObject = CvBridge()
         
         self.detection_pub = rospy.Publisher(self.topicName, Int32MultiArray, queue_size=60)
-        self.rate = rospy.Rate(2)
+        self.rate = rospy.Rate(10)
 
 
     def loadModel(self):
@@ -54,16 +52,10 @@ class SpotMicroObjectDetection():
         rospy.loginfo("received a video message/frame")
         image=self.bridgeObject.imgmsg_to_cv2(message)
         image_height, image_width, channels = image.shape
-        # cv2.imshow("normal", image)
-        # cv2.waitKey(1)
         
-        blob = cv2.dnn.blobFromImage(image, 1/255.0, (self.height, self.width), swapRB=True)
+        blob = cv2.dnn.blobFromImage(image, 1/255.0, (self.width, self.height), swapRB=True)
         self.network.setInput(blob)
         outputs = self.network.forward(self.output_layers)
-
-        class_ids = []
-        confidences = []
-        coords = [] 
 
         for out in outputs:
             for detection in out:
@@ -80,26 +72,18 @@ class SpotMicroObjectDetection():
                     boundary = detection[0:4] * np.array([image_width, image_height, image_width, image_height])
                     (centerX, centerY, boundary_width, boundary_height) = boundary.astype("int")
 
-                    #TODO: Add a node to display detected images when not in headless mode
-                    # Determine the position of the lower left corner
-                    # ll_x = int(centerX - boundary_width / 2)
-                    # ll_y = int(centerY - boundary_height / 2)
-
-                    # Update list of detections higher then our threshold
-                    # coords.append([ll_x, ll_y, boundary_width, boundary_height])
-                    # confidences.append(float(confidence))
-                    # class_ids.append(id)
-
-                    # cv2.rectangle(image, (ll_x, ll_y), (boundary_width, boundary_height), self.colors[id])
-                    # cv2.putText(image, self.classes[id], (ll_x, ll_y - 10), cv2.FONT_HERSHEY_PLAIN, fontScale=1, color=self.colors[id])
                     
-                    rospy.loginfo("Detections found and coordinates published")
                     arrayToPublish = Int32MultiArray()
-                    arrayToPublish.data = [id, centerX, centerY]
+                    arrayToPublish.data = [id, 
+                                           centerX, 
+                                           centerY, 
+                                           boundary_width, 
+                                           boundary_height]
+                    
                     self.detection_pub.publish(arrayToPublish)
 
-        # cv2.imshow("detections", image)
-        # cv2.waitKey(1)
+                    rospy.loginfo("Detections found and coordinates published")
+
 
 
     def run(self):
