@@ -42,6 +42,8 @@ class OpenCVDetectionDebug():
          self.boundary_width, 
          self.boundary_height) = message.data
         
+        rospy.loginfo((self.id, self.centerX, self.centerY))
+        
         self.drawBoxes()
 
 
@@ -51,11 +53,11 @@ class OpenCVDetectionDebug():
         rospy.loginfo("image acquired by debug node, processing cv output of detections...")
         
         self.image=self.bridgeObject.imgmsg_to_cv2(message)
+
         (self.image_height, 
          self.image_width, 
          channels) = self.image.shape
         
-
 
     def drawBoxes(self):
         ll_x = int(self.centerX - self.boundary_width / 2)
@@ -63,25 +65,29 @@ class OpenCVDetectionDebug():
 
         cv2.drawMarker(self.image,
                        (self.centerX, self.centerY),
-                       self.colors[self.id],
+                       color=self.colors[self.id],
                        markerType=cv2.MARKER_CROSS,
-                       markerSize=10
+                       markerSize=10,
+                       thickness=3
                        )
 
-        cv2.rectangle(self.image, 
-                      (ll_x, ll_y), 
-                      (self.boundary_width, self.boundary_height), 
-                      self.colors[self.id])
+        # cv2.rectangle(self.image, 
+        #               (ll_x, ll_y), 
+        #               (self.boundary_width, self.boundary_height), 
+        #               self.colors[self.id],
+        #               thickness=5)
         
-        cv2.putText(self.image, 
-                    self.classes[self.id], 
-                    (ll_x, ll_y - 10), 
-                    cv2.FONT_HERSHEY_PLAIN, 
-                    fontScale=1, 
-                    color=self.colors[self.id])
+        # cv2.putText(self.image, 
+        #             self.classes[self.id], 
+        #             (ll_x, ll_y - 10), 
+        #             cv2.FONT_HERSHEY_PLAIN, 
+        #             fontScale=1, 
+        #             color=self.colors[self.id])
         
         cv2.imshow("detections", self.image)
         cv2.waitKey(1)
+
+        rospy.loginfo("output of detections completed")
                     
 
 

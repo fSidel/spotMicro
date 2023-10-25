@@ -25,7 +25,7 @@ class SpotMicroObjectDetection():
         self.bridgeObject = CvBridge()
         
         self.detection_pub = rospy.Publisher(self.topicName, Int32MultiArray, queue_size=60)
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(5)
 
 
     def loadModel(self):
@@ -38,7 +38,6 @@ class SpotMicroObjectDetection():
         self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
         rospy.loginfo("loaded Darknet")
 
-
         # Provides names of the layers in the network. We must do this because YOLO
         # makes predictions for three different scales of the image we have captured.
         # Thus we must iterate every layer, find which layer in the network is
@@ -49,11 +48,15 @@ class SpotMicroObjectDetection():
 
 
     def cameraCallback(self, message):
-        rospy.loginfo("received a video message/frame")
         image=self.bridgeObject.imgmsg_to_cv2(message)
+
         image_height, image_width, channels = image.shape
         
-        blob = cv2.dnn.blobFromImage(image, 1/255.0, (self.width, self.height), swapRB=True)
+        blob = cv2.dnn.blobFromImage(image, 
+                                     1/255.0, 
+                                     (self.width, self.height), 
+                                     swapRB=True)
+        
         self.network.setInput(blob)
         outputs = self.network.forward(self.output_layers)
 
@@ -69,8 +72,11 @@ class SpotMicroObjectDetection():
                     # this operation may result in floating values,
                     # since there are no fractional pixels we truncate
                     # and turn the float into an int
-                    boundary = detection[0:4] * np.array([image_width, image_height, image_width, image_height])
-                    (centerX, centerY, boundary_width, boundary_height) = boundary.astype("int")
+                    
+                    (centerX, 
+                     centerY, 
+                     boundary_width, 
+                     boundary_height) = (detection[0:4] * np.array([image_width, image_height, image_width, image_height])).astype("int")
 
                     
                     arrayToPublish = Int32MultiArray()
@@ -81,8 +87,6 @@ class SpotMicroObjectDetection():
                                            boundary_height]
                     
                     self.detection_pub.publish(arrayToPublish)
-
-                    rospy.loginfo("Detections found and coordinates published")
 
 
 
