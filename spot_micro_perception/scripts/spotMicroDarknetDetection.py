@@ -26,7 +26,7 @@ class SpotMicroObjectDetection():
 
         self.bridge_object = CvBridge()
 
-        self.detection_publication = rospy.Publisher(SpotMicroObjectDetection.detection_publication,
+        self.detection_publisher = rospy.Publisher(SpotMicroObjectDetection.detection_publication,
                                                      Detections,
                                                      queue_size=60)
         
@@ -98,8 +98,12 @@ class SpotMicroObjectDetection():
                                                 "y": center_y})
 
 
-        self.debug_publisher.publish(DetectionsInFrame(self.bridge_object.cv2_to_imgmsg(image),
-                                                 json.dumps(detections_in_frame)))
+        ros_image = self.bridge_object.cv2_to_imgmsg(image)
+        detection_string = json.dumps(detections_in_frame)
+
+        self.detection_publisher.publish(Detections(detection_string))
+        self.debug_publisher.publish(DetectionsInFrame(ros_image,
+                                                       json.dumps(detection_string)))
 
 
     def run(self):
