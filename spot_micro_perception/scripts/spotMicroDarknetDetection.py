@@ -14,25 +14,25 @@ import json
 
 
 class SpotMicroObjectDetection():  
-    nodeName = "object_detection_publisher"
-    detectionPub = "detection_topic"
-    debugPub = "debug_topic" 
-    videoSub = "video_topic"
+    node_name = "object_detection_publisher"
+    detection_publication = "detection_topic"
+    debug_publication = "debug_topic" 
+    video_subscription = "video_topic"
 
 
     def __init__(self):
-        rospy.init_node(self.nodeName, 
+        rospy.init_node(self.node_name, 
                         anonymous=True)
 
-        self.bridgeObject = CvBridge()
+        self.bridge_object = CvBridge()
         
-        self.debug_pub = rospy.Publisher(SpotMicroObjectDetection.debugPub,
-                                         DetectionsInFrame,
-                                         queue_size=60)
+        self.debug_publisher = rospy.Publisher(SpotMicroObjectDetection.debug_publication,
+                                               DetectionsInFrame,
+                                               queue_size=60)
         
-        rospy.Subscriber(self.videoSub, 
+        rospy.Subscriber(self.video_subscription, 
                          Image, 
-                         self.cameraCallback)
+                         self.camera_callback)
         
         self.rate = rospy.Rate(5)
 
@@ -42,7 +42,7 @@ class SpotMicroObjectDetection():
         self.cfg = rospy.get_param("/detection_publisher/model_cfg")
         self.width = rospy.get_param('/detection_publisher/model_width')
         self.height = rospy.get_param('/detection_publisher/model_height')
-        self.confidenceThresh = 0.5
+        self.confidence_threshold = 0.5
         self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
         rospy.loginfo("loaded Darknet")
 
@@ -57,9 +57,8 @@ class SpotMicroObjectDetection():
                               for i in self.network.getUnconnectedOutLayers()]
 
 
-
-    def cameraCallback(self, message):
-        image=self.bridgeObject.imgmsg_to_cv2(message)
+    def camera_callback(self, message):
+        image=self.bridge_object.imgmsg_to_cv2(message)
 
         (image_height, 
          image_width, 
@@ -82,21 +81,20 @@ class SpotMicroObjectDetection():
                 id = np.argmax(scores)
                 confidence = scores[id]
 
-                if(confidence > self.confidenceThresh):
+                if(confidence > self.confidence_threshold):
                     # Scaling back the size of the boundary, because the predictions are made on a 
                     # scaled down image. this operation may result in floating values,since there
                     #  are no fractional pixels we truncate and turn the float into an int.
                     
-                    (centerX, 
-                     centerY) = (detection[0:2] * np.array([image_width, image_height])).astype("int")
+                    (center_x, 
+                     center_y) = (detection[0:2] * np.array([image_width, image_height])).astype("int")
 
                     detections_in_frame.append({"id": id,
-                                                "x": centerX,
-                                                "y": centerY})
+                                                "x": center_x,
+                                                "y": center_y})
       
-        self.debug_pub.publish(DetectionsInFrame(self.bridgeObject.cv2_to_imgmsg(image),
+        self.debug_publisher.publish(DetectionsInFrame(self.bridge_object.cv2_to_imgmsg(image),
                                                  json.dumps(detections_in_frame)))
-
 
 
     def run(self):
