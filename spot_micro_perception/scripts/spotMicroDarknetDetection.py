@@ -34,7 +34,7 @@ class SpotMicroObjectDetection():
                          Image, 
                          self.camera_callback)
         
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(60)
 
 
         # Loading parameters and darknet network
@@ -42,9 +42,9 @@ class SpotMicroObjectDetection():
         self.cfg = rospy.get_param("/detection_publisher/model_cfg")
         self.width = rospy.get_param('/detection_publisher/model_width')
         self.height = rospy.get_param('/detection_publisher/model_height')
-        self.confidence_threshold = 0.5
+        self.confidence_threshold = rospy.get_param('/detection_publisher/confidence_threshold')
         self.network = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
-        rospy.loginfo("loaded Darknet")
+        rospy.loginfo("Loaded Darknet Neural Network...")
 
 
         # Provides names of the layers in the network. We must do this because YOLO
