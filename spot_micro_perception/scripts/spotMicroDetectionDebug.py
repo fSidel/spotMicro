@@ -20,7 +20,7 @@ the node for debug purposes when on a virtualized development environment
 
 
 
-class OpenCVDetectionDebug():  
+class spotMicroDetectionDebug():  
     node_name = "detection_debug" 
     debug_subscription = "debug_topic"
 
@@ -67,7 +67,7 @@ class OpenCVDetectionDebug():
 
                     
     def run(self):
-        rospy.Subscriber(OpenCVDetectionDebug.debug_subscription,
+        rospy.Subscriber(spotMicroDetectionDebug.debug_subscription,
                          DetectionsInFrame,
                          self.debug_callback)
         rospy.spin()
@@ -75,6 +75,6 @@ class OpenCVDetectionDebug():
 
 
 if __name__ == "__main__":
-    ocvdb = OpenCVDetectionDebug()
+    ocvdb = spotMicroDetectionDebug()
     ocvdb.run()
         
