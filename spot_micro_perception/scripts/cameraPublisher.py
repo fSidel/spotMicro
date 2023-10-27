@@ -7,35 +7,35 @@ import cv2
 
 
 class CameraPublisher():
-    nodeName = "camera_sensor_publisher"
-    topicName = "video_topic"
+    node_name = "camera_sensor_publisher"
+    video_publication = "video_topic"
 
 
     def __init__(self):
-        rospy.init_node(self.nodeName,
+        rospy.init_node(self.node_name,
                         anonymous=True)
         
-        self.capture_pub = rospy.Publisher(self.topicName, Image, queue_size=60)
-        self.rate = rospy.Rate(0.5)
+        self.capture_publisher = rospy.Publisher(self.video_publication, Image, queue_size=60)
+        self.rate = rospy.Rate(24)
 
-        self.videoCaptureObject = cv2.VideoCapture(0)
-        self.bridgeObject = CvBridge()
+        self.video_capture_object = cv2.VideoCapture(0)
+        self.bridge_object = CvBridge()
         
     
-    def videoCapture(self):
-        frameStatus, capturedFrame = self.videoCaptureObject.read()
+    def video_capture(self):
+        capture_success, cv2_image = self.video_capture_object.read()
 
-        if frameStatus == True:
+        if capture_success == True:
             rospy.loginfo("Video frame captured and published")
-            imageToPublish = self.bridgeObject.cv2_to_imgmsg(capturedFrame)
-            self.capture_pub.publish(imageToPublish)
+            ros_image = self.bridge_object.cv2_to_imgmsg(cv2_image)
+            self.capture_publisher.publish(ros_image)
 
         self.rate.sleep()
 
     
     def run(self):
         while not rospy.is_shutdown():
-            self.videoCapture()
+            self.video_capture()
 
 
 if __name__ == "__main__":
