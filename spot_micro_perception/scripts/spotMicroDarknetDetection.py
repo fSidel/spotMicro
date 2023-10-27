@@ -5,7 +5,7 @@ Class for sending coordinates of detected objects to spot micro walk and angle n
 """
 import rospy  
 from sensor_msgs.msg import Image
-from std_msgs.msg import Int32MultiArray
+from spot_micro_perception.msg import Detections
 from spot_micro_perception.msg import DetectionsInFrame
 from cv_bridge import CvBridge
 import numpy as np
@@ -25,6 +25,10 @@ class SpotMicroObjectDetection():
                         anonymous=True)
 
         self.bridge_object = CvBridge()
+
+        self.detection_publication = rospy.Publisher(SpotMicroObjectDetection.detection_publication,
+                                                     Detections,
+                                                     queue_size=60)
         
         self.debug_publisher = rospy.Publisher(SpotMicroObjectDetection.debug_publication,
                                                DetectionsInFrame,
@@ -92,7 +96,8 @@ class SpotMicroObjectDetection():
                     detections_in_frame.append({"id": id,
                                                 "x": center_x,
                                                 "y": center_y})
-      
+
+
         self.debug_publisher.publish(DetectionsInFrame(self.bridge_object.cv2_to_imgmsg(image),
                                                  json.dumps(detections_in_frame)))
 
