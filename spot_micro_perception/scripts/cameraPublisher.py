@@ -16,7 +16,7 @@ class CameraPublisher():
                         anonymous=True)
         
         self.capture_publisher = rospy.Publisher(self.video_publication, Image, queue_size=60)
-        self.rate = rospy.Rate(24)
+        self.rate = rospy.Rate(1)
 
         self.video_capture_object = cv2.VideoCapture(0)
         self.bridge_object = CvBridge()
