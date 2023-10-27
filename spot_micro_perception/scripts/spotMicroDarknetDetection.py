@@ -34,10 +34,6 @@ class SpotMicroObjectDetection():
                                                DetectionsInFrame,
                                                queue_size=60)
         
-        rospy.Subscriber(self.video_subscription, 
-                         Image, 
-                         self.camera_callback)
-        
         self.rate = rospy.Rate(60)
 
 
@@ -107,6 +103,9 @@ class SpotMicroObjectDetection():
 
 
     def run(self):
+        rospy.Subscriber(self.video_subscription, 
+                         Image, 
+                         self.camera_callback)
         rospy.spin()
 
 
