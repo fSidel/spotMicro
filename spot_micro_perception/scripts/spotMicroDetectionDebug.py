@@ -29,7 +29,7 @@ class spotMicroDetectionDebug():
         rospy.init_node(self.node_name, 
                         anonymous=True)
         
-        self.bridgeObject = CvBridge()
+        self.bridge_object = CvBridge()
 
         with open(rospy.get_param('/detection_publisher/model_labels')) as labels:
             self.classes = labels.read().splitlines()
@@ -44,7 +44,7 @@ class spotMicroDetectionDebug():
         (ros_image,
          detections_string) = message.frame, message.detections
 
-        image = self.image=self.bridgeObject.imgmsg_to_cv2(ros_image)
+        image = self.image=self.bridge_object.imgmsg_to_cv2(ros_image)
         detections = json.loads(detections_string)
         
         rospy.loginfo(detections_string)
