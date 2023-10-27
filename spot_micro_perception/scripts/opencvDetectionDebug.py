@@ -2,10 +2,12 @@
 
 import rospy
 from std_msgs.msg import Int32MultiArray
+from spot_micro_perception.msg import DetectionsInFrame
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import numpy as np 
 import cv2
+import json
 
 
 
@@ -23,6 +25,7 @@ class OpenCVDetectionDebug():
     nodeName = "detection_debug" 
     detectionSub = "detection_topic"
     videoSub = "video_topic"
+    debugSub = "debug_topic"
 
 
     def __init__(self):
@@ -31,49 +34,47 @@ class OpenCVDetectionDebug():
         
         self.bridgeObject = CvBridge()
 
+        rospy.Subscriber(OpenCVDetectionDebug.debugSub,
+                         DetectionsInFrame,
+                         self.debugCallback)
+
         with open(rospy.get_param('/detection_publisher/model_labels')) as labels:
             self.classes = labels.read().splitlines()
 
         self.colors = np.random.uniform(0, 255, size=(len(rospy.get_param('/detection_publisher/model_labels')), 3))
         
 
-    def detectionCallback(self, message):
-        # Retrieves coordinates of the boundary box from detection node
-        (self.id, 
-         self.centerX, 
-         self.centerY) = message.data
+    def debugCallback(self, message):
+        # Retrieves the capture of the image along with the coordinates 
+        # of each detection in the frame.
         
-        self.drawBoxes()
+        (ros_image,
+         detections_string) = message.frame, message.detections
 
-
-    def cameraCallback(self, message):   
-        # Retrieves image from camera node, converts it in a cv2 data type
-        # and gets information about the size of the image
-        rospy.loginfo("image acquired by debug node, processing cv output of detections...")
+        image = self.image=self.bridgeObject.imgmsg_to_cv2(ros_image)
+        detections = json.loads(detections_string)
         
-        self.image=self.bridgeObject.imgmsg_to_cv2(message)
-        
+        rospy.loginfo(detections_string)
 
-    def drawBoxes(self):
-        cv2.drawMarker(self.image,
-                       (self.centerX, self.centerY),
-                       color=self.colors[self.id],
-                       markerType=cv2.MARKER_CROSS,
-                       markerSize=10,
-                       thickness=5
-                       )
+        for detection in detections:
+            (id,
+             centerX,
+             centerY) = (detection.get("id"), detection.get("x"), detection.get("y"))
+            
+            cv2.drawMarker(image,
+                           (centerX, centerY),
+                           color=self.colors[id],
+                           markerType=cv2.MARKER_CROSS,
+                           markerSize=10,
+                           thickness=3
+                        )
         
         cv2.imshow("detections", self.image)
         cv2.waitKey(1)
+
                     
 
     def run(self):
-        rospy.Subscriber(OpenCVDetectionDebug.detectionSub,
-                         Int32MultiArray,
-                         self.detectionCallback)
-        rospy.Subscriber(OpenCVDetectionDebug.videoSub,
-                         Image,
-                         self.cameraCallback)
         rospy.spin()
 
 
