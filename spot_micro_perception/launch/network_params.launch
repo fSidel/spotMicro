@@ -1,4 +1,0 @@
-<launch>
-    <rosparam command="load" 
-    file="$(find spot_micro_perception)/configs/network_params.yaml"/>
-</launch>
