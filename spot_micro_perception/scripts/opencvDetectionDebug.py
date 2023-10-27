@@ -22,19 +22,17 @@ the node for debug purposes when on a virtualized development environment
 
 
 class OpenCVDetectionDebug():  
-    nodeName = "detection_debug" 
-    detectionSub = "detection_topic"
-    videoSub = "video_topic"
-    debugSub = "debug_topic"
+    node_name = "detection_debug" 
+    debug_subscription = "debug_topic"
 
 
     def __init__(self):
-        rospy.init_node(self.nodeName, 
+        rospy.init_node(self.node_name, 
                         anonymous=True)
         
         self.bridgeObject = CvBridge()
 
-        rospy.Subscriber(OpenCVDetectionDebug.debugSub,
+        rospy.Subscriber(OpenCVDetectionDebug.debug_subscription,
                          DetectionsInFrame,
                          self.debugCallback)
 
@@ -58,11 +56,11 @@ class OpenCVDetectionDebug():
 
         for detection in detections:
             (id,
-             centerX,
-             centerY) = (detection.get("id"), detection.get("x"), detection.get("y"))
+             center_x,
+             center_y) = (detection.get("id"), detection.get("x"), detection.get("y"))
             
             cv2.drawMarker(image,
-                           (centerX, centerY),
+                           (center_x, center_y),
                            color=self.colors[id],
                            markerType=cv2.MARKER_CROSS,
                            markerSize=10,
@@ -73,7 +71,6 @@ class OpenCVDetectionDebug():
         cv2.waitKey(1)
 
                     
-
     def run(self):
         rospy.spin()
 
