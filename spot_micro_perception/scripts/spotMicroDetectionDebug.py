@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import Int32MultiArray
 from spot_micro_perception.msg import DetectionsInFrame
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge

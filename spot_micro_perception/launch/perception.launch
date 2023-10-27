@@ -77,7 +77,7 @@
         -->
         <group if="$(arg debug_mode)">
             <node pkg="spot_micro_perception" 
-            type="opencvDetectionDebug.py" 
+            type="spotMicroDetectionDebug.py" 
             name="detection_debug" 
             output="screen"/>
         </group>
