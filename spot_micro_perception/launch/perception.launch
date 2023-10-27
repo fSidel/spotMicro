@@ -4,7 +4,7 @@
         to launch a debug window to see the boundaries detection 
         -->
     <arg name="no_model" default="false"/> 
-    <arg name="boundaries_debug" default="false"/>  
+    <arg name="debug_mode" default="false"/>  
     
 
     <!-- 
@@ -36,6 +36,7 @@
         labels:= name_of_labels, 
         width:= input_width_of_model,
         height:= input_height_of_model,
+        confidence:= input_of_minimum_confidence_threshold
 
         Note! For  weights and cfg the launch files expects the files to be in the folder:
         ..../spot_micro_perception/configs/networks/
@@ -48,6 +49,8 @@
         <arg name="labels" default="coco.txt"/>
         <arg name="width" default="416"/>
         <arg name="height" default="416"/>
+        <arg name="confidence" default="0.5"/>
+        
         
         <!-- 
             Launches the object detection manager node, this node  tries
@@ -64,6 +67,7 @@
             <param name="model_labels" value="$(find spot_micro_perception)/configs/labels/$(arg labels)"/>
             <param name="model_width" value="$(arg width)"/>
             <param name="model_height" value="$(arg height)"/>
+            <param name="confidence_threshold" value="$(arg confidence)"/>
         </node>
      
         <!-- 
@@ -71,7 +75,7 @@
             degrades performance so only launch this when checking if the model
             is working properly.
         -->
-        <group if="$(arg boundaries_debug)">
+        <group if="$(arg debug_mode)">
             <node pkg="spot_micro_perception" 
             type="opencvDetectionDebug.py" 
             name="detection_debug" 
