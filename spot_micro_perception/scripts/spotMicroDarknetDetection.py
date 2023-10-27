@@ -88,7 +88,7 @@ class SpotMicroObjectDetection():
                 if(confidence > self.confidence_threshold):
                     # Scaling back the size of the boundary, because the predictions are made on a 
                     # scaled down image. this operation may result in floating values,since there
-                    #  are no fractional pixels we truncate and turn the float into an int.
+                    # are no fractional pixels we truncate and turn the float into an int.
                     
                     (center_x, 
                      center_y) = (detection[0:2] * np.array([image_width, image_height])).astype("int")
