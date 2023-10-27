@@ -6,7 +6,7 @@ Class for sending coordinates of detected objects to spot micro walk and angle n
 import rospy  
 from sensor_msgs.msg import Image
 from std_msgs.msg import Int32MultiArray
-from spot_micro_perception import Detection
+from spot_micro_perception.msg import Detection
 from cv_bridge import CvBridge
 import numpy as np
 import cv2
