@@ -99,7 +99,7 @@ class SpotMicroObjectDetection():
 
         self.detection_publisher.publish(Detections(detection_string))
         self.debug_publisher.publish(DetectionsInFrame(ros_image,
-                                                       json.dumps(detection_string)))
+                                                       detection_string))
 
 
     def run(self):
