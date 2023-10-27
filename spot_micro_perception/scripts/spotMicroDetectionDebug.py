@@ -31,17 +31,13 @@ class OpenCVDetectionDebug():
         
         self.bridgeObject = CvBridge()
 
-        rospy.Subscriber(OpenCVDetectionDebug.debug_subscription,
-                         DetectionsInFrame,
-                         self.debugCallback)
-
         with open(rospy.get_param('/detection_publisher/model_labels')) as labels:
             self.classes = labels.read().splitlines()
 
         self.colors = np.random.uniform(0, 255, size=(len(rospy.get_param('/detection_publisher/model_labels')), 3))
         
 
-    def debugCallback(self, message):
+    def debug_callback(self, message):
         # Retrieves the capture of the image along with the coordinates 
         # of each detection in the frame.
         
@@ -71,6 +67,9 @@ class OpenCVDetectionDebug():
 
                     
     def run(self):
+        rospy.Subscriber(OpenCVDetectionDebug.debug_subscription,
+                         DetectionsInFrame,
+                         self.debug_callback)
         rospy.spin()
 
 
