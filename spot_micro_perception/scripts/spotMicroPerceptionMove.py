@@ -86,8 +86,8 @@ class SpotMicroPerceptionControl():
 
         self._ros_pub_angle_cmd.publish(self._angle_cmd_msg)
 
-    def run():
-        pass
+    def run(self):
+        rospy.loginfo("running...")
 
 
 if __name__ == "__main__":

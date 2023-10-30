@@ -80,13 +80,10 @@
             the robot moves in such a way to always have the object
             at the center of it's vision minus some tolerance interval.
         -->
-        <group if="$(arg track_mode)">
-            <node pkg="spot_micro_perception" 
+        <node pkg="spot_micro_perception" 
             type="spotMicroPerceptionMove.py" 
-            name="track_node" 
+            name="perception_track" 
             output="screen"/>
-            <param name="track_class" value="$(arg track_class)"/>
-        </group>
 
         <!-- 
             Launches the object detection debugger node. This greatly
