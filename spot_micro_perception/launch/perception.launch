@@ -5,6 +5,8 @@
         -->
     <arg name="no_model" default="false"/> 
     <arg name="debug_mode" default="false"/>  
+    <arg name="track_mode" default="true"/>
+    
     
 
     <!-- 
@@ -50,6 +52,8 @@
         <arg name="width" default="416"/>
         <arg name="height" default="416"/>
         <arg name="confidence" default="0.5"/>
+        <arg name="track_class" default="0"/>
+        
         
         
         <!-- 
@@ -69,7 +73,21 @@
             <param name="model_height" value="$(arg height)"/>
             <param name="confidence_threshold" value="$(arg confidence)"/>
         </node>
-     
+
+
+        <!-- 
+            Launches the object tracker node. When a detection is made
+            the robot moves in such a way to always have the object
+            at the center of it's vision minus some tolerance interval.
+        -->
+        <group if="$(arg track_mode)">
+            <node pkg="spot_micro_perception" 
+            type="spotMicroPerceptionMove.py" 
+            name="track_node" 
+            output="screen"/>
+            <param name="track_class" value="$(arg track_class)"/>
+        </group>
+
         <!-- 
             Launches the object detection debugger node. This greatly
             degrades performance so only launch this when checking if the model
