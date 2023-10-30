@@ -44,11 +44,24 @@ class SpotMicroPerceptionControl():
                         anonymous=True)
 
         # Create publishers for commanding velocity, angle, and robot states
-        self._ros_pub_angle_cmd = rospy.Publisher('/angle_cmd', Vector3, queue_size=1)
-        self._ros_pub_vel_cmd = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-        self._ros_pub_walk_cmd = rospy.Publisher('/walk_cmd', Bool, queue_size=1)
-        self._ros_pub_stand_cmd = rospy.Publisher('/stand_cmd', Bool, queue_size=1)
-        self._ros_pub_idle_cmd = rospy.Publisher('/idle_cmd', Bool, queue_size=1)
+        self._ros_pub_angle_cmd = rospy.Publisher('/angle_cmd', 
+                                                  Vector3, 
+                                                  queue_size=1)
+        
+        self._ros_pub_vel_cmd = rospy.Publisher('/cmd_vel', 
+                                                Twist, 
+                                                queue_size=1)
+        
+        self._ros_pub_walk_cmd = rospy.Publisher('/walk_cmd', 
+                                                 Bool, 
+                                                 queue_size=1)
+        self._ros_pub_stand_cmd = rospy.Publisher('/stand_cmd', 
+                                                  Bool, 
+                                                  queue_size=1)
+        
+        self._ros_pub_idle_cmd = rospy.Publisher('/idle_cmd', 
+                                                 Bool, 
+                                                 queue_size=1)
 
         rospy.loginfo("Joystick control node publishers corrrectly initialized")
 
