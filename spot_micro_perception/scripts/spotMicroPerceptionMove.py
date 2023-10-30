@@ -39,7 +39,6 @@ class SpotMicroPerceptionControl():
 
         rospy.loginfo("Setting Up the Spot Micro Perception Control Node...")
 
-        # Set up and title the ros node for this code
         rospy.init_node(self.node_name,
                         anonymous=True)
 
@@ -63,7 +62,7 @@ class SpotMicroPerceptionControl():
                                                  Bool, 
                                                  queue_size=1)
 
-        rospy.loginfo("Joystick control node publishers corrrectly initialized")
+        rospy.loginfo("Perception control node publishers corrrectly initialized")
 
 
     def reset_all_motion_commands_to_zero(self):
