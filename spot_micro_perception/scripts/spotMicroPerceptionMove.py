@@ -6,6 +6,7 @@ from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Twist
 from spot_micro_perception.msg import Detections
 from math import pi
+import json
 import cv2
 
 
@@ -20,7 +21,10 @@ class SpotMicroPerceptionControl():
 
     
     def __init__(self):
-
+        self.tracking_id = rospy.get_param('/perception_track/tracking_id')
+        rospy.loginfo("Class to track set to: ")
+        rospy.loginfo(self.tracking_id)
+        
         self._angle_cmd_msg = Vector3()
         self._angle_cmd_msg.x = 0
         self._angle_cmd_msg.y = 0
@@ -95,7 +99,11 @@ class SpotMicroPerceptionControl():
 
     
     def detection_callback(self, message):
+        detections = json.loads(message.detections)
 
+        trackable_detections = list(filter(lambda detection: detection.get('id') == self.tracking_id,
+                                           detections))
+        
         pass
 
     def run(self):

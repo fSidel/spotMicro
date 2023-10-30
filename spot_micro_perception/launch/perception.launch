@@ -83,7 +83,9 @@
         <node pkg="spot_micro_perception" 
             type="spotMicroPerceptionMove.py" 
             name="perception_track" 
-            output="screen"/>
+            output="screen">
+            <param name="tracking_id" value="$(arg track_class)"/>
+        </node>
 
         <!-- 
             Launches the object detection debugger node. This greatly
