@@ -86,8 +86,18 @@ class SpotMicroPerceptionControl():
 
         self._ros_pub_angle_cmd.publish(self._angle_cmd_msg)
 
+    
+    def on_detection(self):
+        pass
+
     def run(self):
-        rospy.loginfo("running...")
+        self.reset_all_motion_commands_to_zero()
+        
+        rospy.Subscriber(self.detection_subscription, 
+                         Detection, 
+                         self.on_detection)
+
+        rospy.spin()
 
 
 if __name__ == "__main__":
