@@ -19,6 +19,18 @@ class SpotMicroPerceptionControl():
     stand_publication = "/stand_cmd"
     idle_publication = "/idle_cmd"
 
+    # Defines how the robot moves by changing its angle
+
+    MAX_ROLL_DEG = 45   
+    MAX_YAW_DEG = 45
+    MAX_PATCH_DEG = 45      # For now, this is the only value we change to track the object on the y axis
+
+    # Defines how the robot moves by moving its limbs
+
+    MAX_FORWARD_SPEED = 0.05
+    MAX_STRAFE_SPEED = 0.05     # For now, this is the only value we change to track the object on the x axis
+    MAX_YAW_SPEED_DEG = 15
+
     
     def __init__(self):
         self.tracking_id = rospy.get_param('/perception_track/tracking_id')
@@ -100,11 +112,33 @@ class SpotMicroPerceptionControl():
     
     def detection_callback(self, message):
         detections = json.loads(message.detections)
-
-        trackable_detections = list(filter(lambda detection: detection.get('id') == self.tracking_id,
+    
+        trackable_detections = list(filter(lambda detection: detection['id'] == self.tracking_id,
                                            detections))
         
-        pass
+        if not trackable_detections:
+            rospy.loginfo("No detections found of the given class, idling.")
+        else:
+            #TODO: this is very naive, should implement better logic for choosing what detection to track
+            first_detection = trackable_detections[0]
+            rospy.loginfo("tracking detection: %s", first_detection)
+            rospy.loginfo(first_detection['x'])
+            rospy.loginfo(first_detection['y'])
+
+            #TODO: retrieve max parameters for controlling the robot from spot_micro_motion_cmd/config/spot_micro_motion_cmd.yaml
+        
+
+    def on_detection_angle_mode(self, axes):
+        self._angle_cmd_msg.x = pi / 180 * axes[self.ANGLE_AXES_ROLL] * self.MAX_ROLL_DEG * -1
+        self._angle_cmd_msg.y = pi / 180 * axes[self.ANGLE_AXES_PITCH] * self.MAX_PATCH_DEG * -1
+        self._angle_cmd_msg.z = pi / 180 * axes[self.ANGLE_AXES_YAW] * self.MAX_YAW_DEG
+        print('Cmd Values: phi: %1.3f deg, theta: %1.3f deg, psi: %1.3f deg ' \
+            % (
+                self._angle_cmd_msg.x * 180 / pi, self._angle_cmd_msg.y * 180 / pi,
+                self._angle_cmd_msg.z * 180 / pi))
+        self._ros_pub_angle_cmd.publish(self._angle_cmd_msg)
+            
+            
 
     def run(self):
         self.reset_all_motion_commands_to_zero()
