@@ -3,10 +3,36 @@
         Arguments to launch camera without loading a model or 
         to launch a debug window to see the boundaries detection 
         -->
+    <arg name="no_model" default="false"/> 
     <arg name="debug_mode" default="false"/>  
     <arg name="track_mode" default="true"/>
     
+    
+
     <!-- 
+        Launch camera publisher node 
+    -->
+    <node pkg="spot_micro_perception" 
+    type="cameraPublisher.py" 
+    name="camera_publisher_node" 
+    output="screen"/>
+
+
+    <!-- 
+        When no_model:=true launch camera subscriber node without object detection 
+    -->
+    <group if="$(arg no_model)">
+        <node pkg="spot_micro_perception" 
+        type="cameraSubscriber.py" 
+        name="camera_subscriber_node" 
+        output="screen"/>
+    </group>
+
+
+    <!-- 
+        When no_model:=false the system needs a model for object detection, we specify a default but
+        another alternative may be provided with: 
+
         weights:= name_of_weights, 
         cfg:= name_of_cfg, 
         labels:= name_of_labels, 
@@ -19,23 +45,16 @@
         While the labels are expected to be in 
         ..../spot_micro_perception/configs/labels/
      -->
-    <group>
-        <arg name="weights" default="yolov2.weights"/>
-        <arg name="cfg" default="yolov2.cfg"/>  
+    <group unless="$(arg no_model)">
+        <arg name="model" default="yolov2.weights"/>
+        <arg name="config" default="yolov2.cfg"/>  
         <arg name="labels" default="coco.txt"/>
         <arg name="width" default="416"/>
         <arg name="height" default="416"/>
         <arg name="confidence" default="0.5"/>
         <arg name="track_class" default="0"/>
         
-        <!-- 
-            Launch camera publisher node 
-        -->
-        <node pkg="spot_micro_perception" 
-        type="cameraPublisher.py" 
-        name="camera_publisher_node" 
-        output="screen"/>
-
+        
         
         <!-- 
             Launches the object detection manager node, this node  tries
@@ -44,14 +63,14 @@
             refactoring to ROS Humble support will be improved.
         -->
         <node pkg="spot_micro_perception" 
-        type="spotMicroDetectionManager.py" 
+        type="spotMicroDetectionManager_v2.py" 
         name="detection_publisher" 
         output="screen">
-            <param name="model_weights" value="$(find spot_micro_perception)/data/networks/$(arg weights)"/>
-            <param name="model_cfg" value="$(find spot_micro_perception)/data/networks/$(arg cfg)"/>
-            <param name="model_labels" value="$(find spot_micro_perception)/data/labels/$(arg labels)"/>
-            <param name="model_width" value="$(arg width)"/>
-            <param name="model_height" value="$(arg height)"/>
+            <param name="network_model" value="$(find spot_micro_perception)/data/networks/$(arg model)"/>
+            <param name="network_config" value="$(find spot_micro_perception)/data/networks/$(arg config)"/>
+            <param name="network_labels" value="$(find spot_micro_perception)/data/labels/$(arg labels)"/>
+            <param name="input_width" value="$(arg width)"/>
+            <param name="input_height" value="$(arg height)"/>
             <param name="confidence_threshold" value="$(arg confidence)"/>
         </node>
 
@@ -61,14 +80,12 @@
             the robot moves in such a way to always have the object
             at the center of it's vision minus some tolerance interval.
         -->
-        <group if="$(arg track_mode)">
-            <node pkg="spot_micro_perception" 
+        <node pkg="spot_micro_perception" 
             type="spotMicroPerceptionMove.py" 
             name="perception_track" 
             output="screen">
             <param name="tracking_id" value="$(arg track_class)"/>
         </node>
-        </group>
 
         <!-- 
             Launches the object detection debugger node. This greatly

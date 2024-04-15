@@ -1,0 +1,4 @@
+default_network:
+  cfg: networks/yolov2-voc.cfg
+  weight: networks/yolov2-voc.weights
+  labels: labels/voc.txt

@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import rospy
-from spot_micro_perception.msg import DetectionsInFrame
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import numpy as np 
 import cv2
 import json
 
+from spot_micro_perception.msg import Detections
+from spot_micro_perception.msg import DetectionsInFrame
 
 
 """
@@ -34,7 +35,7 @@ class spotMicroDetectionDebug():
         with open(rospy.get_param('/detection_publisher/model_labels')) as labels:
             self.classes = labels.read().splitlines()
 
-        self.colors = np.random.uniform(0, 255, size=(len(rospy.get_param('/detection_publisher/model_labels')), 3))
+        self.colors = np.random.uniform(0, 255, size=(len(rospy.get_param('/detection_publisher/network_labels')), 3))
         
 
     def debug_callback(self, message):

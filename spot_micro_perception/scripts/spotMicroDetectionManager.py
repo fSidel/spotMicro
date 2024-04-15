@@ -7,6 +7,13 @@ import rospy
 import roslaunch
 import os
 
+from cv_bridge import CvBridge
+import json
+import os
+
+from spot_micro_perception.msg import Detections
+from spot_micro_perception.msg import DetectionsInFrame
+
 MISSING_FILES_ERROR = """
 Paths Not Found! 
 Check if the weights, cfg and labels loaded are correct.
@@ -18,6 +25,9 @@ class SpotMicroObjectManager():
     nodeName = "detection_manager"
     packageName = 'spot_micro_perception'
     darknetNode = 'spotMicroDarknetDetection.py'
+    detection_publication = "detection_topic"
+    debug_publication = "debug_topic" 
+    video_subscription = "video_topic"
 
     def __init__(self):
         """
@@ -30,6 +40,18 @@ class SpotMicroObjectManager():
         
         self.launcher = roslaunch.scriptapi.ROSLaunch()
         self.launcher.start()
+
+        self.bridge_object = CvBridge()
+
+        self.detection_publisher = rospy.Publisher(self.detection_publication,
+                                                     Detections,
+                                                     queue_size=60)
+        
+        self.debug_publisher = rospy.Publisher(self.debug_publication,
+                                               DetectionsInFrame,
+                                               queue_size=60)
+        
+        self.rate = rospy.Rate(60)
 
 
     def launchDetectionNode(self):
@@ -49,7 +71,7 @@ class SpotMicroObjectManager():
         self.weights = rospy.get_param('~model_weights')
         self.cfg = rospy.get_param('~model_cfg')
         self.labels = rospy.get_param('~model_labels')
-
+        rospy.loginfo("load labels path: " + self.labels)
 
         # Check if paths to weights and configuration
         # of the model actually exist
@@ -67,7 +89,7 @@ class SpotMicroObjectManager():
         # no one really trains those anymore. In OpenCV >=4.5
         # the dnn module can convert PyTorch models into ONNX formats
         # and those are natively supported by OpenCV with the
-        # function cv2.dnn.readNetFromONNX(
+        # function cv2.dnn.readNetFromONNX()
         if (self.weights.endswith(".weights") 
             and self.cfg.endswith(".cfg")):
             self.YOLO = roslaunch.core.Node(package=SpotMicroObjectManager.packageName, 

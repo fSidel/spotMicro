@@ -109,8 +109,6 @@ class SpotMicroObjectDetection():
         rospy.spin()
 
 
-
-
 if __name__ == "__main__":
     smod = SpotMicroObjectDetection()
     smod.run()
