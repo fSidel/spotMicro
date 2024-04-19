@@ -122,8 +122,6 @@ class SpotMicroPerceptionControl():
             #TODO: this is very naive, should implement better logic for choosing what detection to track
             first_detection = trackable_detections[0]
             rospy.loginfo("tracking detection: %s", first_detection)
-            rospy.loginfo(first_detection['x'])
-            rospy.loginfo(first_detection['y'])
 
             #TODO: retrieve max parameters for controlling the robot from spot_micro_motion_cmd/config/spot_micro_motion_cmd.yaml
         

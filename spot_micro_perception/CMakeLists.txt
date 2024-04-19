@@ -165,12 +165,10 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/cameraPublisher.py
-   scripts/spotMicroDarknetDetection.py
-   scripts/spotMicroDetectionDebug.py
    scripts/spotMicroPerceptionMove.py
-   scripts/spotMicroDetectionManager.py
-   scripts/spotMicroDetectionManager_v2.py
+   scripts/spotMicroNetworkManager.py
    scripts/utilities/NetworkFather.py
+   scripts/utilities/DetectionsDisplay.py
    scripts/utilities/MobilenetNetwork.py
    scripts/utilities/YOLONetwork.py
    scripts/utilities/NetworkRunner.py

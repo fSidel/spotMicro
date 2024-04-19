@@ -1,5 +1,0 @@
-default_network:
-  cfg: networks/yolov2.cfg
-  weight: networks/yolov2.weights
-  labels: labels/coco.txt
-  

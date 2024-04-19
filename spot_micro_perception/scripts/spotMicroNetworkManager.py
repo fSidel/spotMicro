@@ -4,24 +4,19 @@
 Class for sending coordinates of detected objects to spot micro walk and angle node
 """
 import rospy  
-import roslaunch
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import json
-import os
 
+from utilities.ModelConfigReader import ModelConfigReader
 from utilities.NetworkRunner import NetworkRunner
 from spot_micro_perception.msg import Detections
-from spot_micro_perception.msg import DetectionsInFrame
-
 
 
 class SpotMicroDetectionManager():
     nodeName = "detection_manager"
     packageName = 'spot_micro_perception'
-    darknetNode = 'spotMicroDarknetDetection.py'
     detection_publication = "detection_topic"
-    debug_publication = "debug_topic" 
     video_subscription = "video_topic"
 
     def __init__(self):
@@ -37,13 +32,11 @@ class SpotMicroDetectionManager():
         # if none are specified, the defaults from
         # the launch file perception.launch will
         # be used
-        self.model = rospy.get_param('~network_model')
-        self.config = rospy.get_param('~network_config')
-        self.labels = rospy.get_param('~network_labels')
-        self.width = rospy.get_param('/detection_publisher/model_width')
-        self.height = rospy.get_param('/detection_publisher/model_height')
-        rospy.loginfo("load labels path: " + self.labels)
-        
+        self.configs_folder = rospy.get_param('/network_manager/configs_folder')
+        self.config_file = rospy.get_param('/network_manager/config_file')
+        self.display_detections = rospy.get_param('/network_manager/display_detections')
+
+        rospy.loginfo("Loading Network with the following config: " + self.config_file)
 
         self.bridge_object = CvBridge()
 
@@ -51,12 +44,26 @@ class SpotMicroDetectionManager():
                                                      Detections,
                                                      queue_size=60)
         
-        self.debug_publisher = rospy.Publisher(SpotMicroDetectionManager.debug_publication,
-                                               DetectionsInFrame,
-                                               queue_size=60)
         
         self.rate = rospy.Rate(60)
+
+
+    def retrieve_setup_data(self):
+        rospy.loginfo("Retrieving Configuration...")
+
+        self.network_config = ModelConfigReader(self.configs_folder, 
+                                                self.config_file)
+
+        rospy.loginfo(self.network_config.current_config)
         
+
+    def setup_camera(self):
+        #TODO: Implement a Service to communicate with the Pi Camera Node
+        # to change the resolution of the video capture to better
+        # implement the resize of an image (right now it's software based with OpenCV,
+        # but the Pi Cam can resize in place with the hardware)
+        pass        
+
 
     def run_network(self):
         """
@@ -69,42 +76,40 @@ class SpotMicroDetectionManager():
         of the paths. 
         """
 
-        # Check if paths to weights and configuration
-        # of the model actually exist
-        if not (os.stat(self.model).st_size > 0 
-                and os.stat(self.config).st_size > 0 
-                and os.stat(self.labels).st_size > 0):
-            rospy.loginfo("No Network Found!")
-
-        rospy.loginfo("load model path: " + self.model)
-        rospy.loginfo("load model config path: " + self.config)
+        rospy.loginfo("load model path: " + self.network_config.model)
+        rospy.loginfo("load model config path: " + self.network_config.modelcfg)
 
         self.network = NetworkRunner()
-        self.network.run_network(self.model, self.config)
+        self.network.run_network(self.network_config.model, self.network_config.modelcfg)
+
+        if self.display_detections is True:
+            self.network.run_detection_display(self.network_config.labels)
 
 
     def camera_callback(self, message):
         image = self.bridge_object.imgmsg_to_cv2(message)
 
-        detections_in_frame = self.network.detect_on_image(image, self.width, self.height)
+        detections_in_frame = self.network.detect_on_image(image, self.network_config.width, self.network_config.height)
         rospy.loginfo("detections made: " + str(detections_in_frame))
+
+        if self.display_detections is True:
+            self.network.show_detections(image, detections_in_frame)
         
-
-        ros_image = self.bridge_object.cv2_to_imgmsg(image)
         detection_string = json.dumps(detections_in_frame)
-
         self.detection_publisher.publish(Detections(detection_string))
-        self.debug_publisher.publish(DetectionsInFrame(ros_image,
-                                                       detection_string))
 
 
         
     def run(self):
-        rospy.Subscriber(self.video_subscription, 
-                         Image, 
-                         self.camera_callback)
-        self.run_network()
-        rospy.spin()
+        try:
+            rospy.Subscriber(self.video_subscription, 
+                            Image, 
+                            self.camera_callback)
+            self.retrieve_setup_data()
+            self.run_network()
+            rospy.spin()
+        except IOError:
+            rospy.signal_shutdown("Shutting Down for IOError")
     
 
 

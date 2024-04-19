@@ -1,86 +1,52 @@
 <launch>
     <!-- 
-        Arguments to launch camera without loading a model or 
-        to launch a debug window to see the boundaries detection 
-        -->
-    <arg name="debug_mode" default="false"/>  
-    <arg name="track_mode" default="true"/>
-    
-    <!-- 
-        weights:= name_of_weights, 
-        cfg:= name_of_cfg, 
-        labels:= name_of_labels, 
-        width:= input_width_of_model,
-        height:= input_height_of_model,
-        confidence:= input_of_minimum_confidence_threshold
+        Note! For  model and config the launch files expects 
+        the files to be in the folder:
 
-        Note! For  weights and cfg the launch files expects the files to be in the folder:
-        ..../spot_micro_perception/configs/networks/
+        ..../spot_micro_perception/data/networks/
         While the labels are expected to be in 
-        ..../spot_micro_perception/configs/labels/
+        ..../spot_micro_perception/data/labels/
      -->
-    <group>
-        <arg name="weights" default="yolov2.weights"/>
-        <arg name="cfg" default="yolov2.cfg"/>  
-        <arg name="labels" default="coco.txt"/>
-        <arg name="width" default="416"/>
-        <arg name="height" default="416"/>
-        <arg name="confidence" default="0.5"/>
-        <arg name="track_class" default="0"/>
-        
-        <!-- 
-            Launch camera publisher node 
-        -->
-        <node pkg="spot_micro_perception" 
-        type="cameraPublisher.py" 
-        name="camera_publisher_node" 
-        output="screen"/>
 
-        
-        <!-- 
-            Launches the object detection manager node, this node  tries
-            to recognize the architecture of the model and load it with the 
-            appropriate tools. As of now only Darknet is supported but after
-            refactoring to ROS Humble support will be improved.
-        -->
-        <node pkg="spot_micro_perception" 
-        type="spotMicroDetectionManager.py" 
-        name="detection_publisher" 
+    <arg name="display_detections" default="false"/>  
+    <arg name="track_mode" default="true"/>
+    <arg name="configs_folder" default="$(find spot_micro_perception)/data"/>
+    
+    <arg name="yaml_file" default="default.yaml"/>
+    <arg name="track_class" default="0"/>
+
+    <!-- Launch camera publisher node -->
+    <node pkg="spot_micro_perception" 
+    type="cameraPublisher.py" 
+    name="camera_publisher_node" 
+    output="screen"/>
+    <!-- 
+        Launches the object detection manager node, this node  tries
+        to recognize the architecture of the model and load it with the 
+        appropriate tools. As of now only Darknet is supported but after
+        refactoring to ROS Humble support will be improved.
+    -->
+    <node pkg="spot_micro_perception"
+    required="true"
+    type="spotMicroNetworkManager.py" 
+    name="network_manager" 
+    output="screen">
+        <param name="display_detections" value="$(arg display_detections)"/>
+        <param name="configs_folder" value="$(arg configs_folder)"/>
+        <param name="config_file" value="$(arg configs_folder)/$(arg yaml_file)"/>
+    </node>
+
+
+    <!-- 
+        Launches the object tracker node. When a detection is made
+        the robot moves in such a way to always have the object
+        at the center of it's vision minus some tolerance interval.
+    -->
+    <node pkg="spot_micro_perception" 
+        type="spotMicroPerceptionMove.py" 
+        name="perception_track" 
         output="screen">
-            <param name="model_weights" value="$(find spot_micro_perception)/data/networks/$(arg weights)"/>
-            <param name="model_cfg" value="$(find spot_micro_perception)/data/networks/$(arg cfg)"/>
-            <param name="model_labels" value="$(find spot_micro_perception)/data/labels/$(arg labels)"/>
-            <param name="model_width" value="$(arg width)"/>
-            <param name="model_height" value="$(arg height)"/>
-            <param name="confidence_threshold" value="$(arg confidence)"/>
-        </node>
+        <param name="tracking_id" value="$(arg track_class)"/>
+    </node>
 
-
-        <!-- 
-            Launches the object tracker node. When a detection is made
-            the robot moves in such a way to always have the object
-            at the center of it's vision minus some tolerance interval.
-        -->
-        <group if="$(arg track_mode)">
-            <node pkg="spot_micro_perception" 
-            type="spotMicroPerceptionMove.py" 
-            name="perception_track" 
-            output="screen">
-            <param name="tracking_id" value="$(arg track_class)"/>
-        </node>
-        </group>
-
-        <!-- 
-            Launches the object detection debugger node. This greatly
-            degrades performance so only launch this when checking if the model
-            is working properly.
-        -->
-        <group if="$(arg debug_mode)">
-            <node pkg="spot_micro_perception" 
-            type="spotMicroDetectionDebug.py" 
-            name="detection_debug" 
-            output="screen"/>
-        </group>
-
-    </group>
 </launch>

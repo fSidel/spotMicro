@@ -1,0 +1,6 @@
+model: networks/yolov2.weights
+modelcfg: networks/yolov2.cfg
+labels: labels/coco.txt
+width: 416
+height: 416
+confidence_threshold: 0.9

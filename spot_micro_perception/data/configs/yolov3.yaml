@@ -1,4 +1,0 @@
-default_network:
-  cfg: networks/yolov3.cfg
-  weight: networks/yolov3.weights
-  labels: labels/coco.txt
